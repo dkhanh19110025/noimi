@@ -257,3 +257,327 @@
   flex-direction: column;
   gap: 10px;
 }
+
+
+/* ═══════════════════════════════════════════════
+   BOOKING WIZARD
+   ═══════════════════════════════════════════════ */
+
+/* Step header */
+.step-header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Progress bar */
+.progress-bar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 32px;
+  padding: 14px 20px;
+  background: var(--card);
+  border: var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+.progress-step {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  padding: 6px 10px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  color: var(--ink-faint);
+  transition: all 0.2s ease;
+}
+.progress-step__num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--ink-faint);
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.progress-step__label {
+  display: none;
+}
+@media (min-width: 480px) {
+  .progress-step__label {
+    display: inline;
+  }
+}
+.progress-step--active {
+  color: var(--ink);
+  background: var(--yellow);
+}
+.progress-step--active .progress-step__num {
+  border-color: var(--ink);
+  background: var(--white);
+  font-weight: 700;
+}
+.progress-step--done {
+  color: var(--ink-soft);
+}
+.progress-step--done .progress-step__num {
+  border-color: var(--ink-soft);
+  background: var(--green);
+  color: var(--ink);
+}
+
+/* Step actions */
+.step-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 32px;
+}
+.step-actions .btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ── Combo selected ── */
+.combo-card--selected {
+  outline: 3px solid var(--ink);
+  outline-offset: -3px;
+  background: var(--yellow);
+}
+.combo-card { cursor: pointer; }
+.combo-card__check {
+  padding: 6px 16px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  background: var(--green);
+  border-top: var(--border);
+  color: var(--ink);
+}
+
+/* ── Date grid ── */
+.date-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.date-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 6px;
+  background: var(--card);
+  border: var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  font-family: var(--font-display);
+  cursor: pointer;
+  position: relative;
+}
+
+.date-cell__day {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+.date-cell__num {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+.date-cell__month {
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+}
+.date-cell__badge {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  font-size: 0.7rem;
+}
+
+.date-cell--weekend .date-cell__day {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.date-cell--selected {
+  background: var(--yellow);
+  outline: 3px solid var(--ink);
+  outline-offset: -3px;
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.date-cell--disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.date-cell--disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* ── Time grid ── */
+.time-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.time-cell {
+  min-width: 72px;
+  padding: 10px 16px;
+  background: var(--card);
+  border: var(--border);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-sm);
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  cursor: pointer;
+  text-align: center;
+}
+.time-cell--selected {
+  background: var(--yellow);
+  outline: 3px solid var(--ink);
+  outline-offset: -3px;
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* ── Booking form ── */
+.booking-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 24px;
+  max-width: 480px;
+}
+
+.form-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+}
+.form-required {
+  color: var(--accent);
+}
+
+.form-input {
+  padding: 10px 16px;
+  background: var(--white);
+  border: var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+.form-input:focus {
+  outline: 3px solid var(--ink);
+  outline-offset: 2px;
+}
+.form-input--error {
+  border-color: var(--accent);
+  box-shadow: 2px 2px 0 var(--accent);
+}
+.form-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+.form-error {
+  font-size: 0.9rem;
+  color: var(--accent);
+}
+
+/* ── Booking summary ── */
+.booking-summary {
+  max-width: 480px;
+}
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--ink-faint);
+  font-size: 1rem;
+}
+.summary-row:last-child {
+  border-bottom: none;
+}
+
+/* ── Confirm done ── */
+.confirm-done {
+  text-align: center;
+  max-width: 500px;
+  margin: 0 auto;
+}
+.confirm-done__icon {
+  font-size: 4rem;
+  margin-bottom: 12px;
+}
+.confirm-done .booking-summary {
+  margin-inline: auto;
+  text-align: left;
+}
+
+
+/* ── Confirm address card ── */
+.confirm-address {
+  max-width: 480px;
+  margin-inline: auto;
+  text-align: left;
+}
+
+/* ── Confirm action buttons ── */
+.confirm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+/* ── Zalo button ── */
+.zalo-btn {
+  background: #0068ff;
+  color: #fff;
+  border-color: #0055d4;
+  box-shadow: 3px 3px 0 #0055d4;
+}
+.zalo-btn:hover {
+  background: #0055d4;
+}
+
+/* ── Confirm links ── */
+.confirm-links a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.confirm-links a:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* ── Error callout ── */
+.callout--error {
+  background: var(--pink);
+  border-color: var(--accent);
+  color: var(--ink);
+}
+
+/* Logo đủ cao để bấm bằng ngón tay */
+.site-header__name {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}

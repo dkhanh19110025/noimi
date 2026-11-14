@@ -1,5 +1,30 @@
+# Thư viện và build
 node_modules
 .next
-.env
-.env.local
+out
 next-env.d.ts
+*.tsbuildinfo
+
+# Biến môi trường (giữ lại .env.example)
+.env
+.env.*
+!.env.example
+
+# Vercel / Render cục bộ
+.vercel
+.render
+
+# Công cụ Claude Code (cấu hình cục bộ, không thuộc dự án)
+.claude
+
+# Log và file tạm
+*.log
+npm-debug.log*
+.cache
+coverage
+
+# Editor và hệ điều hành
+.vscode
+.idea
+.DS_Store
+Thumbs.db
