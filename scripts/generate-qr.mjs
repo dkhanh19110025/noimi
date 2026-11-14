@@ -1,6 +1,15 @@
+// Tạo mã QR.
+//   npm run qr                 → QR đặt lịch cho khách (dùng SITE_URL)
+//   npm run qr:admin           → QR vào trang quản lý (dùng SITE_URL)
+//   thêm --local               → trỏ về máy đang chạy dev (địa chỉ Wi-Fi:3001), để thử trên điện thoại
 import QRCode from "qrcode";
 import { mkdirSync, readFileSync, existsSync } from "node:fs";
 import { networkInterfaces } from "node:os";
+
+const args = new Set(process.argv.slice(2));
+const isAdmin = args.has("--admin");
+const isLocal = args.has("--local");
+const LOCAL_PORT = 3001;
 
 // Đọc SITE_URL từ môi trường, hoặc từ file .env nếu có
 function loadEnvFile() {
@@ -23,18 +32,26 @@ function lanIp() {
 }
 
 const env = { ...loadEnvFile(), ...process.env };
-let site = env.SITE_URL;
-if (!site) {
+let site;
+if (isLocal) {
   const ip = lanIp();
   if (!ip) {
-    console.error("Thiếu SITE_URL và không tìm thấy địa chỉ LAN. Đặt SITE_URL=https://ten-mien.com");
+    console.error("Không tìm thấy địa chỉ Wi-Fi/LAN của máy này.");
     process.exit(1);
   }
-  site = `http://${ip}:3000`;
-  console.log(`(Không có SITE_URL, dùng địa chỉ LAN: ${site})`);
+  site = `http://${ip}:${LOCAL_PORT}`;
+} else {
+  site = env.SITE_URL;
+  if (!site) {
+    console.error("Thiếu SITE_URL. Đặt SITE_URL=https://ten-mien.com trong .env");
+    process.exit(1);
+  }
 }
 
-const url = `${site.replace(/\/+$/, "")}/dat-lich?src=qr`;
+const path = isAdmin ? "/admin" : "/dat-lich?src=qr";
+const url = `${site.replace(/\/+$/, "")}${path}`;
+const name = `${isAdmin ? "admin" : "dat-lich"}${isLocal ? "-local" : ""}`;
+
 const opts = {
   errorCorrectionLevel: "M",
   margin: 4, // vùng trống tối thiểu 4 ô
@@ -42,9 +59,9 @@ const opts = {
 };
 
 mkdirSync("qr", { recursive: true });
-await QRCode.toFile("qr/dat-lich.png", url, { ...opts, width: 1024 });
-await QRCode.toFile("qr/dat-lich.svg", url, { ...opts, type: "svg" });
+await QRCode.toFile(`qr/${name}.png`, url, { ...opts, width: 1024 });
+await QRCode.toFile(`qr/${name}.svg`, url, { ...opts, type: "svg" });
 
 console.log(`Đã tạo QR trỏ tới: ${url}`);
-console.log("  qr/dat-lich.png (1024x1024)");
-console.log("  qr/dat-lich.svg");
+console.log(`  qr/${name}.png (1024x1024)`);
+console.log(`  qr/${name}.svg`);

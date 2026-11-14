@@ -9,6 +9,9 @@ export default function SiteHeader() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
+  // Trang quản lý có thanh riêng, không hiện menu của khách
+  if (pathname.startsWith("/admin")) return null;
+
   return (
     <header className="site-header">
       <div className="container site-header__inner">

@@ -3,13 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -H 0.0.0.0 -p 3000",
+    "dev": "next dev -H 0.0.0.0 -p 3001",
     "build": "next build",
-    "start": "next start -H 0.0.0.0 -p 3000",
-    "qr": "node scripts/generate-qr.mjs"
+    "start": "next start -H 0.0.0.0 -p 3001",
+    "qr": "node scripts/generate-qr.mjs",
+    "qr:admin": "node scripts/generate-qr.mjs --admin"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.119.0",
+    "jose": "^6.2.17",
     "next": "^15.1.0",
     "qrcode": "^1.5.4",
     "react": "^19.0.0",

@@ -1,0 +1,13 @@
+{
+  "name": "linhhue · quản lý",
+  "short_name": "linhhue",
+  "start_url": "/admin",
+  "scope": "/admin",
+  "display": "standalone",
+  "background_color": "#fbf7ea",
+  "theme_color": "#fbf7ea",
+  "lang": "vi",
+  "icons": [
+    { "src": "/admin-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
