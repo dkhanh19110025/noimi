@@ -1,16 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { SESSION_COOKIE, verifySessionToken } from "@/lib/session";
+import { SESSION_COOKIE, verifySession } from "@/lib/session";
 
-/** Chặn mọi /admin/* và /api/admin/* nếu chưa đăng nhập (trừ trang và API đăng nhập). */
+/**
+ * Chặn mọi /admin/* và /api/admin/* nếu chưa có phiên đăng nhập hợp lệ (trừ trang và API đăng nhập).
+ * Middleware chỉ kiểm tra chữ ký và hạn; việc đối chiếu version (sau khi đổi mật khẩu)
+ * do requireAdmin() và các API admin làm phía server.
+ */
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  const isLoginPage = pathname === "/admin/login";
-  const isLoginApi = pathname === "/api/admin/login";
-  if (isLoginPage || isLoginApi) return NextResponse.next();
+  if (pathname === "/admin/login" || pathname === "/api/admin/login") {
+    return NextResponse.next();
+  }
 
-  const ok = await verifySessionToken(req.cookies.get(SESSION_COOKIE)?.value);
-  if (ok) return NextResponse.next();
+  const v = await verifySession(req.cookies.get(SESSION_COOKIE)?.value);
+  if (v !== null) return NextResponse.next();
 
   if (pathname.startsWith("/api/")) {
     return NextResponse.json(

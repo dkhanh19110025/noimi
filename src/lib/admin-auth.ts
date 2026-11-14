@@ -1,11 +1,27 @@
 import "server-only";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { SESSION_COOKIE, verifySessionToken } from "@/lib/session";
+import { SESSION_COOKIE, verifySession } from "@/lib/session";
+import { getSupabase } from "@/lib/supabase-server";
+import { getCredentials } from "@/lib/admin-password";
 
+/**
+ * Phiên hợp lệ khi chữ ký đúng, chưa hết hạn VÀ version trùng với version hiện tại
+ * trong database (đổi mật khẩu sẽ tăng version, đăng xuất các máy khác).
+ */
 export async function isAdmin(): Promise<boolean> {
   const jar = await cookies();
-  return verifySessionToken(jar.get(SESSION_COOKIE)?.value);
+  const v = await verifySession(jar.get(SESSION_COOKIE)?.value);
+  if (v === null) return false;
+
+  const db = getSupabase();
+  if (!db) return false;
+  try {
+    const cred = await getCredentials(db);
+    return cred.version === v;
+  } catch {
+    return false;
+  }
 }
 
 /** Dùng đầu mỗi trang/hành động admin (bảo vệ thêm một lớp sau middleware). */

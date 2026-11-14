@@ -10,24 +10,27 @@ function secretKey(): Uint8Array | null {
   return new TextEncoder().encode(s);
 }
 
-export async function createSessionToken(): Promise<string | null> {
+/** `version` tăng mỗi lần đổi mật khẩu → phiên cũ hết hiệu lực. */
+export async function createSessionToken(version: number): Promise<string | null> {
   const key = secretKey();
   if (!key) return null;
-  return new SignJWT({ role: "admin" })
+  return new SignJWT({ role: "admin", v: version })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime(`${SESSION_MAX_AGE}s`)
     .sign(key);
 }
 
-export async function verifySessionToken(token: string | undefined): Promise<boolean> {
-  if (!token) return false;
+/** Trả về version trong phiên nếu chữ ký và hạn hợp lệ, ngược lại null. */
+export async function verifySession(token: string | undefined): Promise<number | null> {
+  if (!token) return null;
   const key = secretKey();
-  if (!key) return false;
+  if (!key) return null;
   try {
     const { payload } = await jwtVerify(token, key, { algorithms: ["HS256"] });
-    return payload.role === "admin";
+    if (payload.role !== "admin") return null;
+    return typeof payload.v === "number" ? payload.v : 0;
   } catch {
-    return false;
+    return null;
   }
 }
