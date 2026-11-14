@@ -1,0 +1,44 @@
+:root {
+  /* Giấy */
+  --paper: #fbf7ea;
+  --paper-grid: rgba(120, 100, 60, 0.1);
+  --card: #fffdf5;
+  --white: #ffffff;
+
+  /* Mực */
+  --ink: #1f1b16;
+  --ink-soft: #5b5446;
+  --ink-faint: #8f8878;
+
+  /* Pastel */
+  --blue: #cfe2fb;
+  --yellow: #fdeeb0;
+  --pink: #fbd3dc;
+  --green: #d8f0d2;
+  --purple: #e3d9f7;
+  --orange: #fde0c4;
+
+  /* Nhấn */
+  --accent: #c0453a;
+
+  /* Font */
+  --font-body: "Patrick Hand", "Itim", "Comic Sans MS", cursive, sans-serif;
+  --font-display: "Itim", "Patrick Hand", cursive, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* Hình khối */
+  --border: 2px solid var(--ink);
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-pill: 999px;
+
+  --shadow: 3px 3px 0 var(--ink);
+  --shadow-sm: 2px 2px 0 var(--ink);
+  --shadow-hover: 5px 5px 0 var(--ink);
+
+  /* Khung trang */
+  --container: 1120px;
+  --gutter: clamp(16px, 4vw, 48px);
+  --section-gap: clamp(48px, 8vw, 96px);
+}

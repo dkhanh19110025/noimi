@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Hình mẫu Volume">
+<title>Hình mẫu Volume</title>
+<rect width="400" height="300" fill="#fbd3dc"/>
+<g stroke="#1f1b16" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+<path d="M111 152 L81 137"/>
+<path d="M123 143 L97 121"/>
+<path d="M139 135 L118 108"/>
+<path d="M157 129 L143 98"/>
+<path d="M178 125 L171 92"/>
+<path d="M200 124 L200 90"/>
+<path d="M222 125 L229 92"/>
+<path d="M243 129 L257 98"/>
+<path d="M261 135 L282 108"/>
+<path d="M277 143 L303 121"/>
+<path d="M289 152 L319 137"/>
+<path d="M90 170 Q200 90 310 170 Q200 225 90 170 Z" fill="#fffdf5"/>
+<circle cx="200" cy="168" r="24" fill="#fdeeb0"/>
+<circle cx="200" cy="168" r="9" fill="#1f1b16"/>
+</g>
+<text x="200" y="266" text-anchor="middle" font-family="Itim, cursive" font-size="26" fill="#1f1b16">Volume</text>
+</svg>

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Hình mẫu Hybrid">
+<title>Hình mẫu Hybrid</title>
+<rect width="400" height="300" fill="#d8f0d2"/>
+<g stroke="#1f1b16" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+<path d="M111 152 L87 140"/>
+<path d="M127 141 L107 122"/>
+<path d="M148 132 L133 108"/>
+<path d="M173 126 L165 100"/>
+<path d="M200 124 L200 97"/>
+<path d="M227 126 L235 100"/>
+<path d="M252 132 L267 108"/>
+<path d="M273 141 L293 122"/>
+<path d="M289 152 L313 140"/>
+<path d="M90 170 Q200 90 310 170 Q200 225 90 170 Z" fill="#fffdf5"/>
+<circle cx="200" cy="168" r="24" fill="#fdeeb0"/>
+<circle cx="200" cy="168" r="9" fill="#1f1b16"/>
+</g>
+<text x="200" y="266" text-anchor="middle" font-family="Itim, cursive" font-size="26" fill="#1f1b16">Hybrid</text>
+</svg>

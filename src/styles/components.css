@@ -1,0 +1,259 @@
+/* Badge nghiêng */
+.badge-tilt {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--white);
+  border: var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  transform: rotate(-2deg);
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-size: 1rem;
+}
+
+/* Pill / chip */
+.pill {
+  display: inline-block;
+  padding: 6px 16px;
+  border: var(--border);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-sm);
+  font-family: var(--font-display);
+  background: var(--yellow);
+  font-size: 1rem;
+  line-height: 1.4;
+}
+.pill--blue { background: var(--blue); }
+.pill--yellow { background: var(--yellow); }
+.pill--pink { background: var(--pink); }
+.pill--green { background: var(--green); }
+.pill--purple { background: var(--purple); }
+.pill--orange { background: var(--orange); }
+
+/* Card */
+.card {
+  background: var(--card);
+  border: var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: clamp(16px, 3vw, 28px);
+}
+
+/* Tương tác kiểu nhãn dán */
+.interactive {
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.interactive:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-hover);
+}
+.interactive:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+/* Nút */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 22px;
+  background: var(--yellow);
+  color: var(--ink);
+  border: var(--border);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow);
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  cursor: pointer;
+  text-decoration: none;
+}
+.btn--blue { background: var(--blue); }
+.btn--white { background: var(--white); }
+
+/* Header trang */
+.site-header {
+  border-bottom: var(--border);
+  background: var(--paper);
+}
+.site-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-block: 14px;
+}
+.site-header__name {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+}
+
+/* Lưới combo */
+.combo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.combo-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 0;
+  overflow: hidden;
+}
+.combo-card:nth-child(even) {
+  transform: rotate(0.6deg);
+}
+.combo-card:nth-child(odd) {
+  transform: rotate(-0.6deg);
+}
+.combo-card:hover {
+  transform: translate(-2px, -2px) rotate(0deg);
+}
+
+.combo-card__img {
+  aspect-ratio: 4 / 3;
+  border-bottom: var(--border);
+  background: var(--blue);
+  overflow: hidden;
+}
+.combo-card__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.combo-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 20px 20px;
+  flex: 1;
+}
+.combo-card__name {
+  font-size: 1.5rem;
+}
+.combo-card__desc {
+  color: var(--ink-soft);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+.combo-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 6px;
+}
+
+/* Callout */
+.callout {
+  display: inline-block;
+  padding: 14px 20px;
+  background: var(--yellow);
+  border: var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+  transform: rotate(1deg);
+  font-size: 1rem;
+}
+
+/* Footer dòng kẻ đứt */
+.footer-line {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: var(--ink-faint);
+  font-size: 0.9rem;
+  text-align: center;
+  padding-block: 32px;
+}
+.footer-line::before,
+.footer-line::after {
+  content: "";
+  flex: 1;
+  border-top: 2px dashed var(--ink-faint);
+}
+
+/* Menu */
+.site-header__name {
+  text-decoration: none;
+  color: var(--ink);
+}
+.nav-toggle {
+  display: inline-flex;
+}
+.nav {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: var(--gutter);
+  right: var(--gutter);
+  z-index: 10;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  background: var(--card);
+  border: var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+.nav--open {
+  display: flex;
+}
+.nav__link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 6px 16px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--ink);
+  text-decoration: none;
+  border: 2px solid transparent;
+}
+.nav__link--active {
+  background: var(--yellow);
+  border: var(--border);
+  box-shadow: var(--shadow-sm);
+}
+.site-header {
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .nav-toggle {
+    display: none;
+  }
+  .nav {
+    display: flex;
+    position: static;
+    flex-direction: row;
+    padding: 0;
+    background: none;
+    border: 0;
+    box-shadow: none;
+  }
+}
+
+/* Shopping / đánh giá */
+.product-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4.5rem;
+}
+.review-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
