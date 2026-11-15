@@ -753,3 +753,15 @@
     display: inline;
   }
 }
+
+/* ── Ô mật khẩu có nút hiện/ẩn ── */
+.password-field { position: relative; display: block; }
+.password-field .form-input { width: 100%; padding-right: 96px; }
+.password-toggle {
+  position: absolute; top: 50%; right: 8px; transform: translateY(-50%);
+  padding: 4px 12px; min-height: 36px;
+  font-family: var(--font-display); font-size: .9rem; color: var(--ink);
+  background: var(--yellow); border: var(--border); border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-sm); cursor: pointer;
+}
+.password-toggle:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }

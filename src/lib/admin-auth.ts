@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { SESSION_COOKIE, verifySession } from "@/lib/session";
@@ -9,7 +10,7 @@ import { getCredentials } from "@/lib/admin-password";
  * Phiên hợp lệ khi chữ ký đúng, chưa hết hạn VÀ version trùng với version hiện tại
  * trong database (đổi mật khẩu sẽ tăng version, đăng xuất các máy khác).
  */
-export async function isAdmin(): Promise<boolean> {
+export const isAdmin = cache(async (): Promise<boolean> => {
   const jar = await cookies();
   const v = await verifySession(jar.get(SESSION_COOKIE)?.value);
   if (v === null) return false;
@@ -22,7 +23,7 @@ export async function isAdmin(): Promise<boolean> {
   } catch {
     return false;
   }
-}
+});
 
 /** Dùng đầu mỗi trang/hành động admin (bảo vệ thêm một lớp sau middleware). */
 export async function requireAdmin(): Promise<void> {

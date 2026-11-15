@@ -86,13 +86,23 @@ export async function POST(req: NextRequest) {
     return fail(400, "BAD_EMAIL", "Email không hợp lệ.");
   }
 
-  if (!(await verifyTurnstile(body.turnstileToken))) {
-    return fail(403, "TURNSTILE", "Xác minh bảo mật thất bại. Vui lòng thử lại.");
-  }
-
   try {
-    // Tính lại giờ trống ở server, không tin giờ do trình duyệt gửi lên.
-    const free = await getFreeSlots(db, body.date, combo.durationMinutes);
+    // Chạy song song: xác minh Turnstile, tính giờ trống, đếm lịch sắp tới của SĐT
+    // (trước đây chạy nối tiếp, mỗi bước thêm một lượt đi-về mạng).
+    const [turnstileOk, free, countRes] = await Promise.all([
+      verifyTurnstile(body.turnstileToken),
+      getFreeSlots(db, body.date, combo.durationMinutes),
+      db
+        .from("bookings")
+        .select("id", { count: "exact", head: true })
+        .eq("customer_phone", phone)
+        .eq("status", "confirmed")
+        .gt("starts_at", new Date().toISOString()),
+    ]);
+
+    if (!turnstileOk) {
+      return fail(403, "TURNSTILE", "Xác minh bảo mật thất bại. Vui lòng thử lại.");
+    }
     if (!free.includes(body.time)) {
       return fail(
         409,
@@ -101,13 +111,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Giới hạn số lịch đang chờ của một SĐT
-    const { count, error: countErr } = await db
-      .from("bookings")
-      .select("id", { count: "exact", head: true })
-      .eq("customer_phone", phone)
-      .eq("status", "confirmed")
-      .gt("starts_at", new Date().toISOString());
+    const { count, error: countErr } = countRes;
     if (countErr) throw countErr;
     if ((count ?? 0) >= MAX_PENDING_PER_PHONE) {
       return fail(

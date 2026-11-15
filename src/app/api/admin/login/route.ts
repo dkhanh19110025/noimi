@@ -43,13 +43,13 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const cred = await getCredentials(db);
+    const ip = clientIp(req);
+    // Hai truy vấn độc lập: chạy song song cho nhanh.
+    const [cred, locked] = await Promise.all([getCredentials(db), isLockedOut(db, ip)]);
     if (!cred.hash && !process.env.ADMIN_PASSWORD) {
       return fail(503, "NOT_CONFIGURED", "Admin chưa được cấu hình.");
     }
-
-    const ip = clientIp(req);
-    if (await isLockedOut(db, ip)) {
+    if (locked) {
       return fail(429, "LOCKED", "Thử quá nhiều lần. Vui lòng đợi 15 phút rồi thử lại.");
     }
 
