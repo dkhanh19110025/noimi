@@ -44,6 +44,7 @@ export const STATUS_LABEL: Record<string, string> = {
   arrived: "Đã đến",
   cancelled: "Đã hủy",
   no_show: "Không đến",
+  done: "Đã làm xong",
 };
 
 export const STATUS_PILL: Record<string, string> = {
@@ -51,6 +52,7 @@ export const STATUS_PILL: Record<string, string> = {
   arrived: "pill--green",
   cancelled: "pill--pink",
   no_show: "pill--orange",
+  done: "pill--green",
 };
 
 export const STATUS_ICON: Record<string, string> = {
@@ -58,4 +60,5 @@ export const STATUS_ICON: Record<string, string> = {
   arrived: "✅",
   cancelled: "❌",
   no_show: "👻",
+  done: "🎉",
 };

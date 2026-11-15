@@ -1,15 +1,33 @@
 // Cấu hình và logic tính giờ trống. Dùng được cả ở server lẫn trình duyệt.
 // Mọi giờ đều hiểu theo giờ Việt Nam (UTC+7, không có giờ mùa hè).
 
-/** Giờ mở cửa (24h) */
-export const OPEN_HOUR = 8;
-/** Giờ đóng cửa (24h) — dịch vụ phải kết thúc trước giờ này */
-export const CLOSE_HOUR = 20;
+/** Ba buổi nhận lịch (phút tính từ 0h). Dịch vụ phải bắt đầu và kết thúc trong cùng một buổi. */
+export type Session = {
+  id: "morning" | "afternoon" | "evening";
+  label: string;
+  icon: string;
+  startMin: number;
+  endMin: number;
+  /** Chuỗi giờ hiển thị cho khách */
+  range: string;
+};
+export const SESSIONS: Session[] = [
+  { id: "morning", label: "Buổi sáng", icon: "🌅", startMin: 7 * 60, endMin: 11 * 60 + 30, range: "7:00 – 11:30" },
+  { id: "afternoon", label: "Buổi chiều", icon: "🌤️", startMin: 12 * 60, endMin: 17 * 60 + 30, range: "12:00 – 17:30" },
+  { id: "evening", label: "Buổi tối", icon: "🌙", startMin: 18 * 60, endMin: 24 * 60, range: "18:00 – 0:00" },
+];
+
+/** Buổi chứa một giờ bắt đầu "HH:mm" */
+export function sessionOf(time: string): Session | undefined {
+  const [h, m] = time.split(":").map(Number);
+  const t = h * 60 + m;
+  return SESSIONS.find((s) => t >= s.startMin && t < s.endMin);
+}
 /** Khoảng cách giữa các giờ bắt đầu (phút) */
-export const SLOT_INTERVAL = 30;
+export const SLOT_INTERVAL = 120;
 
 /** Đặt trước tối đa bao nhiêu ngày */
-export const MAX_DAYS_AHEAD = 30;
+export const MAX_DAYS_AHEAD = 7;
 /** Phải đặt trước ít nhất bao nhiêu giờ */
 export const MIN_HOURS_AHEAD = 3;
 /** Số lịch đang chờ tối đa cho mỗi SĐT */
@@ -57,7 +75,7 @@ export type BusyRange = { startMs: number; endMs: number };
  * Tính các giờ bắt đầu còn trống của một ngày.
  * - Bỏ ngày nghỉ, ngày đã qua, ngày quá MAX_DAYS_AHEAD
  * - Bỏ giờ chưa đủ MIN_HOURS_AHEAD
- * - Bỏ giờ làm dịch vụ vượt giờ đóng cửa
+ * - Bỏ giờ làm dịch vụ không kết thúc trong cùng buổi (sáng / chiều / tối)
  * - Bỏ giờ chồng lên lịch đã có
  */
 export function computeSlots(
@@ -76,20 +94,18 @@ export function computeSlots(
   if (daysAhead < 0 || daysAhead >= MAX_DAYS_AHEAD) return [];
 
   const earliest = nowMs + MIN_HOURS_AHEAD * 60 * 60 * 1000;
-  const closeMs = vnInstant(dateStr, pad(CLOSE_HOUR) + ":00");
+  const dayStartMs = vnInstant(dateStr);
   const out: string[] = [];
 
-  for (let h = OPEN_HOUR; h < CLOSE_HOUR; h++) {
-    for (let m = 0; m < 60; m += SLOT_INTERVAL) {
-      const time = `${pad(h)}:${pad(m)}`;
-      const startMs = vnInstant(dateStr, time);
+  for (const ses of SESSIONS) {
+    for (let t = ses.startMin; t + durationMinutes <= ses.endMin; t += SLOT_INTERVAL) {
+      const startMs = dayStartMs + t * 60 * 1000;
       const endMs = startMs + durationMinutes * 60 * 1000;
 
       if (startMs < earliest) continue;
-      if (endMs > closeMs) continue;
       if (busy.some((b) => startMs < b.endMs && endMs > b.startMs)) continue;
 
-      out.push(time);
+      out.push(`${pad(Math.floor(t / 60))}:${pad(t % 60)}`);
     }
   }
   return out;

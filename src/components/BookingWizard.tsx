@@ -6,8 +6,8 @@ import {
   isHoliday,
   toDateStr,
   dayName,
-  OPEN_HOUR,
-  CLOSE_HOUR,
+  SESSIONS,
+  sessionOf,
   MAX_DAYS_AHEAD,
   MIN_HOURS_AHEAD,
 } from "@/data/booking";
@@ -271,15 +271,11 @@ export default function BookingWizard() {
 
   /* ── STEP 3 — chọn giờ ── */
   function StepTime() {
-    // Nhóm slot theo buổi
-    const morning = slots.filter((s) => {
-      const h = parseInt(s.split(":")[0]);
-      return h < 12;
-    });
-    const afternoon = slots.filter((s) => {
-      const h = parseInt(s.split(":")[0]);
-      return h >= 12;
-    });
+    // Nhóm giờ trống theo buổi
+    const groups = SESSIONS.map((ses) => ({
+      ses,
+      times: slots.filter((t) => sessionOf(t)?.id === ses.id),
+    })).filter((g) => g.times.length > 0);
 
     return (
       <>
@@ -294,11 +290,14 @@ export default function BookingWizard() {
           {data.date.split("-").reverse().join("/")}
         </p>
         <p className="muted" style={{ marginTop: 12 }}>
-          Giờ mở cửa:{" "}
-          <span className="hl">
-            {OPEN_HOUR}:00 – {CLOSE_HOUR}:00
-          </span>{" "}
-          · Đặt trước ít nhất {MIN_HOURS_AHEAD} tiếng · Chỉ hiện giờ còn trống.
+          Nhận lịch 3 buổi:{" "}
+          {SESSIONS.map((x, i) => (
+            <span key={x.id}>
+              {i > 0 && " · "}
+              {x.label.replace("Buổi ", "")} <span className="hl">{x.range}</span>
+            </span>
+          ))}
+          . Đặt trước ít nhất {MIN_HOURS_AHEAD} tiếng · Chỉ hiện giờ còn trống.
         </p>
 
         {notice && (
@@ -319,50 +318,27 @@ export default function BookingWizard() {
           </div>
         ) : (
           <>
-            {morning.length > 0 && (
-              <>
+            {groups.map(({ ses, times }) => (
+              <div key={ses.id}>
                 <h2 style={{ marginTop: 28, fontSize: "1.3rem" }}>
-                  🌅 Buổi sáng
+                  {ses.icon} {ses.label}{" "}
+                  <span className="muted" style={{ fontSize: "1rem" }}>({ses.range})</span>
                 </h2>
                 <div className="time-grid">
-                  {morning.map((s) => (
+                  {times.map((s) => (
                     <button
                       key={s}
                       className={`time-cell interactive ${
                         data.time === s ? "time-cell--selected" : ""
                       }`}
-                      onClick={() =>
-                        setData((prev) => ({ ...prev, time: s }))
-                      }
+                      onClick={() => setData((prev) => ({ ...prev, time: s }))}
                     >
                       {s}
                     </button>
                   ))}
                 </div>
-              </>
-            )}
-            {afternoon.length > 0 && (
-              <>
-                <h2 style={{ marginTop: 28, fontSize: "1.3rem" }}>
-                  🌤️ Buổi chiều
-                </h2>
-                <div className="time-grid">
-                  {afternoon.map((s) => (
-                    <button
-                      key={s}
-                      className={`time-cell interactive ${
-                        data.time === s ? "time-cell--selected" : ""
-                      }`}
-                      onClick={() =>
-                        setData((prev) => ({ ...prev, time: s }))
-                      }
-                    >
-                      {s}
-                    </button>
-                  ))}
-                </div>
-              </>
-            )}
+              </div>
+            ))}
           </>
         )}
 

@@ -10,7 +10,8 @@ import {
   STATUS_LABEL,
   STATUS_PILL,
 } from "@/lib/format";
-import { updateNote, updateStatus } from "../../actions";
+import ConfirmButton from "@/components/admin/ConfirmButton";
+import { deleteBooking, markDone, updateNote } from "../../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -18,10 +19,6 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const MESSAGES: Record<string, { text: string; error: boolean }> = {
   saved: { text: "✅ Đã lưu.", error: false },
-  overlap: {
-    text: "Giờ này đã có lịch khác nên không thể đặt lại là đã xác nhận / đã đến.",
-    error: true,
-  },
   error: { text: "Có lỗi khi lưu. Vui lòng thử lại.", error: true },
   db: { text: "Chưa kết nối database.", error: true },
 };
@@ -100,24 +97,30 @@ export default async function AdminBookingPage({
       </div>
 
       <section style={{ marginTop: 28 }}>
-        <h2 style={{ fontSize: "1.4rem" }}>Đổi trạng thái</h2>
+        <h2 style={{ fontSize: "1.4rem" }}>Xử lý lịch</h2>
         <div className="admin-status-grid">
-          {(["confirmed", "arrived", "cancelled", "no_show"] as const).map((s) => (
-            <form action={updateStatus} key={s}>
+          {b.status !== "done" && (
+            <form action={markDone}>
               <input type="hidden" name="id" value={b.id} />
-              <input type="hidden" name="status" value={s} />
-              <button
-                className={`btn interactive admin-status-btn ${
-                  b.status === s ? "admin-status-btn--current" : "btn--white"
-                }`}
-                type="submit"
-                disabled={b.status === s}
-              >
-                {STATUS_ICON[s]} {STATUS_LABEL[s]}
+              <button className="btn btn--green interactive admin-status-btn" type="submit">
+                ✅ Đã làm xong
               </button>
             </form>
-          ))}
+          )}
+          <form action={deleteBooking}>
+            <input type="hidden" name="id" value={b.id} />
+            <input type="hidden" name="back" value={b.status === "confirmed" || b.status === "arrived" ? "active" : "history"} />
+            <ConfirmButton
+              className="btn btn--pink interactive admin-status-btn"
+              message={`Hủy và xóa hẳn lịch của ${b.customer_name}? Toàn bộ dữ liệu lịch này sẽ mất và không khôi phục được.`}
+            >
+              {b.status === "confirmed" || b.status === "arrived" ? "❌ Hủy lịch" : "🗑️ Xóa lịch"}
+            </ConfirmButton>
+          </form>
         </div>
+        <p className="muted" style={{ marginTop: 10, fontSize: "1rem" }}>
+          “Đã làm xong” chuyển lịch sang mục Đã xong. “Hủy lịch” xóa hẳn lịch khỏi hệ thống.
+        </p>
       </section>
 
       <section style={{ marginTop: 28 }}>

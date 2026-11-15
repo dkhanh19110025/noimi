@@ -4,8 +4,9 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/admin-auth";
 import { getSupabase } from "@/lib/supabase-server";
+import { findAffected, parseBlockInput } from "@/lib/blocks";
 
-const STATUSES = ["confirmed", "arrived", "cancelled", "no_show"] as const;
+const STATUSES = ["confirmed", "arrived", "cancelled", "no_show", "done"] as const;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function readId(formData: FormData): string {
@@ -50,4 +51,77 @@ export async function updateNote(formData: FormData) {
   revalidatePath("/admin");
   revalidatePath(`/admin/lich/${id}`);
   redirect(`/admin/lich/${id}?msg=${error ? "error" : "saved"}`);
+}
+
+/** Đánh dấu đã làm xong: lịch rời danh sách chờ và sang trang Đã xong / Đã hủy. */
+export async function markDone(formData: FormData) {
+  await requireAdmin();
+  const id = readId(formData);
+
+  const db = getSupabase();
+  if (!db) redirect(`/admin/lich/${id}?msg=db`);
+
+  const { error } = await db.from("bookings").update({ status: "done" }).eq("id", id);
+  revalidatePath("/admin");
+  revalidatePath("/admin/lich-su");
+  revalidatePath(`/admin/lich/${id}`);
+  if (error) redirect(`/admin/lich/${id}?msg=error`);
+  redirect("/admin?msg=done");
+}
+
+/** Xóa HẲN lịch khỏi database (không khôi phục được). Dùng cho nút Hủy lịch và Xóa. */
+export async function deleteBooking(formData: FormData) {
+  await requireAdmin();
+  const id = readId(formData);
+  const back = String(formData.get("back") ?? "") === "history" ? "/admin/lich-su" : "/admin";
+
+  const db = getSupabase();
+  if (!db) redirect(`/admin/lich/${id}?msg=db`);
+
+  const { data, error } = await db.from("bookings").delete().eq("id", id).select("id");
+
+  revalidatePath("/admin");
+  revalidatePath("/admin/lich-su");
+  if (error || !data || data.length === 0) redirect(`${back}?msg=error`);
+  redirect(`${back}?msg=deleted`);
+}
+
+/** Tạo lịch nghỉ. Nếu đã có khách đặt trong khung đó thì hỏi lại (force=1 mới lưu). */
+export async function createBlock(formData: FormData) {
+  await requireAdmin();
+  const raw: Record<string, string> = {};
+  for (const k of ["day", "type", "from", "to", "reason"]) raw[k] = String(formData.get(k) ?? "");
+  const input = parseBlockInput(raw);
+  if (!input) redirect("/admin/lich-nghi?msg=invalid");
+
+  const db = getSupabase();
+  if (!db) redirect("/admin/lich-nghi?msg=error");
+
+  if (String(formData.get("force") ?? "") !== "1") {
+    const affected = await findAffected(db, input.day, input.startMin, input.endMin);
+    if (affected.length > 0) {
+      const qs = new URLSearchParams({ confirm: "1", ...raw });
+      redirect(`/admin/lich-nghi?${qs.toString()}`);
+    }
+  }
+
+  const { error } = await db.from("blocked_slots").insert({
+    day: input.day,
+    start_min: input.startMin,
+    end_min: input.endMin,
+    reason: input.reason || null,
+  });
+  revalidatePath("/admin/lich-nghi");
+  redirect(`/admin/lich-nghi?msg=${error ? "error" : "saved"}`);
+}
+
+/** Bỏ một lịch nghỉ (giờ đó mở lại cho khách đặt). */
+export async function deleteBlock(formData: FormData) {
+  await requireAdmin();
+  const id = readId(formData);
+  const db = getSupabase();
+  if (!db) redirect("/admin/lich-nghi?msg=error");
+  const { error } = await db.from("blocked_slots").delete().eq("id", id);
+  revalidatePath("/admin/lich-nghi");
+  redirect(`/admin/lich-nghi?msg=${error ? "error" : "removed"}`);
 }

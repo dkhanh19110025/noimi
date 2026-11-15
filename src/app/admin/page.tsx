@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AdminTabs from "@/components/admin/AdminTabs";
 import { requireAdmin } from "@/lib/admin-auth";
 import { getSupabase } from "@/lib/supabase-server";
 import { vnDateStr } from "@/data/booking";
@@ -33,12 +34,11 @@ const dayOf = (iso: string) => vnDateStr(Date.parse(iso));
 export default async function AdminBookingsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ v?: string }>;
+  searchParams: Promise<{ msg?: string }>;
 }) {
   await requireAdmin();
 
-  const { v } = await searchParams;
-  const past = v === "past";
+  const { msg } = await searchParams;
   const today = vnDateStr(Date.now());
 
   const db = getSupabase();
@@ -48,22 +48,19 @@ export default async function AdminBookingsPage({
   if (!db) {
     loadError = "Chưa kết nối database.";
   } else {
-    const nowIso = new Date().toISOString();
-    let q = db
+    // Chỉ lịch còn cần xử lý (chưa làm xong, chưa hủy), sớm nhất lên trước
+    const { data, error } = await db
       .from("bookings")
       .select(
         "id, code, combo_name, price, customer_name, customer_phone, customer_email, note, starts_at, ends_at, status"
-      );
-    q = past
-      ? q.lt("ends_at", nowIso).order("starts_at", { ascending: false }).limit(100)
-      : q.gte("ends_at", nowIso).order("starts_at", { ascending: true }).limit(200);
-    const { data, error } = await q;
+      )
+      .in("status", ["confirmed", "arrived"])
+      .order("starts_at", { ascending: true })
+      .limit(300);
     if (error) loadError = "Không tải được lịch. Vui lòng thử lại.";
     rows = (data ?? []) as Row[];
   }
 
-  const active = rows.filter((r) => r.status === "confirmed" || r.status === "arrived");
-  const revenue = rows.filter((r) => r.status === "arrived").reduce((s, r) => s + r.price, 0);
 
   // Gom theo ngày, giữ nguyên thứ tự đã sắp
   const groups: { day: string; items: Row[] }[] = [];
@@ -78,28 +75,26 @@ export default async function AdminBookingsPage({
     <main className="container section admin-main">
       <h1 className="admin-title">Lịch hẹn</h1>
 
-      <div className="admin-tabs" role="tablist" aria-label="Lọc lịch">
-        <Link
-          href="/admin"
-          role="tab"
-          aria-selected={!past}
-          className={`pill interactive${!past ? " pill--blue" : " pill--white"}`}
-        >
-          🗓️ Sắp tới
-        </Link>
-        <Link
-          href="/admin?v=past"
-          role="tab"
-          aria-selected={past}
-          className={`pill interactive${past ? " pill--blue" : " pill--white"}`}
-        >
-          🕘 Đã qua
-        </Link>
-      </div>
+      <AdminTabs current="active" />
+
+      {msg === "done" && (
+        <div className="callout" style={{ marginTop: 16 }} role="status">
+          🎉 Đã chuyển lịch sang mục Đã xong.
+        </div>
+      )}
+      {msg === "deleted" && (
+        <div className="callout" style={{ marginTop: 16 }} role="status">
+          🗑️ Đã hủy và xóa lịch.
+        </div>
+      )}
+      {msg === "error" && (
+        <div className="callout callout--error" style={{ marginTop: 16 }} role="alert">
+          ⚠️ Không thực hiện được. Vui lòng thử lại.
+        </div>
+      )}
 
       <p className="muted admin-summary">
-        <span className="pill pill--yellow">{active.length} lịch</span>
-        {revenue > 0 && <span className="pill pill--green">Đã thu {formatPrice(revenue)}</span>}
+        <span className="pill pill--yellow">{rows.length} lịch</span>
       </p>
 
       {loadError && (
@@ -110,7 +105,7 @@ export default async function AdminBookingsPage({
 
       {!loadError && rows.length === 0 && (
         <div className="callout" style={{ marginTop: 24 }}>
-          😌 {past ? "Chưa có lịch nào đã qua." : "Chưa có lịch sắp tới."}
+          😌 Chưa có lịch nào đang chờ.
         </div>
       )}
 
