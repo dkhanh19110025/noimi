@@ -1028,3 +1028,36 @@
   top: 16px;
   right: 16px;
 }
+
+/* Đánh giá & góp ý */
+.reviews-heading { margin: 32px 0 12px; font-size: clamp(1.3rem, 3vw, 1.8rem); }
+.feedback-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.feedback-grid .feedback-strip__item { width: auto; height: 120px; }
+.review-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 560px;
+}
+.review-form h3 { margin: 0; }
+.star-input { display: flex; align-items: center; gap: 4px; }
+.star-input__btn {
+  padding: 2px 4px;
+  border: 0;
+  background: none;
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--ink);
+  cursor: pointer;
+}
+.star-input__btn:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; border-radius: var(--radius-sm); }
+.star-input__hint { margin-left: 8px; }
+/* Ô bẫy bot: ẩn khỏi người dùng, vẫn nằm trong form */
+.hp-field { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }

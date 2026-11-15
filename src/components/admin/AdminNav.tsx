@@ -8,7 +8,8 @@ export default function AdminNav() {
   const pathname = usePathname();
   const router = useRouter();
   const onPassword = pathname.startsWith("/admin/mat-khau");
-  const onSchedule = !onPassword;
+  const onFeedback = pathname.startsWith("/admin/phan-hoi");
+  const onSchedule = !onPassword && !onFeedback;
 
   return (
     <nav className="admin-bar__nav" aria-label="Menu quản lý">
@@ -18,6 +19,13 @@ export default function AdminNav() {
         aria-current={onSchedule ? "page" : undefined}
       >
         📅<span>Lịch</span>
+      </Link>
+      <Link
+        href="/admin/phan-hoi"
+        className={`admin-bar__link${onFeedback ? " is-active" : ""}`}
+        aria-current={onFeedback ? "page" : undefined}
+      >
+        💬<span className="admin-bar__label">Phản hồi</span>
       </Link>
       <Link
         href="/admin/mat-khau"

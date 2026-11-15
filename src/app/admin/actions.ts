@@ -125,3 +125,43 @@ export async function deleteBlock(formData: FormData) {
   revalidatePath("/admin/lich-nghi");
   redirect(`/admin/lich-nghi?msg=${error ? "error" : "removed"}`);
 }
+
+/* ── Đánh giá & góp ý của khách ── */
+
+/** Duyệt (hiện công khai) hoặc ẩn lại một đánh giá. */
+export async function setReviewStatus(formData: FormData) {
+  await requireAdmin();
+  const id = readId(formData);
+  const status = String(formData.get("status") ?? "");
+  if (status !== "approved" && status !== "pending") redirect("/admin/phan-hoi");
+
+  const db = getSupabase();
+  if (!db) redirect("/admin/phan-hoi?msg=error");
+  const { error } = await db.from("reviews").update({ status }).eq("id", id);
+  revalidatePath("/admin/phan-hoi");
+  revalidatePath("/danh-gia");
+  redirect(`/admin/phan-hoi?msg=${error ? "error" : status === "approved" ? "approved" : "hidden"}`);
+}
+
+/** Xóa hẳn một đánh giá (không khôi phục được). */
+export async function deleteReview(formData: FormData) {
+  await requireAdmin();
+  const id = readId(formData);
+  const db = getSupabase();
+  if (!db) redirect("/admin/phan-hoi?msg=error");
+  const { error } = await db.from("reviews").delete().eq("id", id);
+  revalidatePath("/admin/phan-hoi");
+  revalidatePath("/danh-gia");
+  redirect(`/admin/phan-hoi?msg=${error ? "error" : "deleted"}`);
+}
+
+/** Xóa hẳn một góp ý. */
+export async function deleteNote(formData: FormData) {
+  await requireAdmin();
+  const id = readId(formData);
+  const db = getSupabase();
+  if (!db) redirect("/admin/phan-hoi?tab=gop-y&msg=error");
+  const { error } = await db.from("feedback_notes").delete().eq("id", id);
+  revalidatePath("/admin/phan-hoi");
+  redirect(`/admin/phan-hoi?tab=gop-y&msg=${error ? "error" : "deleted"}`);
+}

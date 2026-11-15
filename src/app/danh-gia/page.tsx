@@ -1,33 +1,28 @@
-const reviews = [
-  { id: 1, name: "Khách A", stars: 5, text: "Mi nhẹ, tự nhiên, ngồi làm thoải mái.", color: "blue" },
-  { id: 2, name: "Khách B", stars: 5, text: "Đặt lịch nhanh, đến là được làm liền.", color: "pink" },
-  { id: 3, name: "Khách C", stars: 4, text: "Mi giữ được lâu, sẽ quay lại.", color: "green" },
-] as const;
+import ReviewsView, { type PublicReview } from "@/components/ReviewsView";
+import { getSupabase } from "@/lib/supabase-server";
 
-export default function ReviewsPage() {
+// Làm mới tối đa 5 phút/lần; khi chủ tiệm duyệt hoặc ẩn đánh giá thì trang cũng được làm mới ngay.
+export const revalidate = 300;
+
+export default async function ReviewsPage() {
+  let reviews: PublicReview[] = [];
+  const db = getSupabase();
+  if (db) {
+    const { data } = await db
+      .from("reviews")
+      .select("id, name, stars, content, created_at")
+      .eq("status", "approved")
+      .order("created_at", { ascending: false })
+      .limit(60);
+    reviews = (data ?? []) as PublicReview[];
+  }
+
   return (
     <main className="container section">
       <span className="badge-tilt">Đánh giá</span>
       <h1 style={{ marginTop: 24 }}>Khách nói gì</h1>
       <p className="subtitle">— lời thật từ khách của tiệm</p>
-
-      <p className="callout" style={{ marginTop: 24 }}>
-        📌 Bản demo: các đánh giá bên dưới là <strong>nội dung mẫu để xem bố cục</strong>, không phải của khách thật.
-        Sẽ thay bằng đánh giá thật của tiệm.
-      </p>
-
-      <ul className="combo-grid" style={{ listStyle: "none", padding: 0 }}>
-        {reviews.map((r) => (
-          <li key={r.id} className="card review-card" style={{ background: `var(--${r.color})` }}>
-            <p aria-label={`${r.stars} trên 5 sao`}>
-              {"★".repeat(r.stars)}
-              {"☆".repeat(5 - r.stars)}
-            </p>
-            <p>“{r.text}”</p>
-            <p className="muted">— {r.name} (mẫu)</p>
-          </li>
-        ))}
-      </ul>
+      <ReviewsView reviews={reviews} />
     </main>
   );
 }

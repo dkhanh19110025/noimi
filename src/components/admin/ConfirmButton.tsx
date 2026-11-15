@@ -9,10 +9,12 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
  */
 export default function ConfirmButton({
   message,
+  title = "⚠️ Xóa hẳn lịch này?",
   className,
   children,
 }: {
   message: string;
+  title?: string;
   className?: string;
   children: ReactNode;
 }) {
@@ -44,7 +46,7 @@ export default function ConfirmButton({
             aria-label="Xác nhận"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2>⚠️ Xóa hẳn lịch này?</h2>
+            <h2>{title}</h2>
             <p className="muted" style={{ marginTop: 8 }}>{message}</p>
             <div className="zalo-modal__actions">
               <button
