@@ -91,7 +91,6 @@ export default function BookingWizard() {
   }, []);
 
   /* ── Zalo deep link ── */
-  const zaloUrl = `https://zalo.me/${shop.zaloPhone}`;
 
   /* ── STEP 1 — chọn combo ── */
   function StepCombo() {
@@ -152,21 +151,30 @@ export default function BookingWizard() {
                 </div>
               </div>
               {data.combo?.id === c.id && (
-                <div className="combo-card__check">✓ Đã chọn</div>
+                <div className="combo-card__check">
+                  <span>✓ Đã chọn</span>
+                  <button
+                    type="button"
+                    className="btn interactive combo-card__next"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      goNext();
+                    }}
+                    onKeyDown={(e) => e.stopPropagation()}
+                  >
+                    Tiếp → Chọn ngày
+                  </button>
+                </div>
               )}
             </li>
           ))}
         </ul>
 
-        <div className="step-actions">
-          <button
-            className="btn interactive"
-            disabled={!data.combo}
-            onClick={goNext}
-          >
-            Tiếp → Chọn ngày
-          </button>
-        </div>
+        {!data.combo && (
+          <p className="muted" style={{ marginTop: 20 }}>
+            👆 Chạm vào một combo để chọn — nút Tiếp sẽ hiện ngay trên combo đó.
+          </p>
+        )}
       </>
     );
   }
@@ -245,7 +253,7 @@ export default function BookingWizard() {
           })}
         </div>
 
-        <div className="step-actions">
+        <div className="step-actions step-actions--sticky">
           <button className="btn btn--white interactive" onClick={goBack}>
             ← Quay lại
           </button>
@@ -358,7 +366,7 @@ export default function BookingWizard() {
           </>
         )}
 
-        <div className="step-actions">
+        <div className="step-actions step-actions--sticky">
           <button className="btn btn--white interactive" onClick={goBack}>
             ← Quay lại
           </button>
@@ -460,75 +468,74 @@ export default function BookingWizard() {
 
         <div className="booking-form">
           {/* Tên */}
-          <label className="form-label">
-            <span>
-              Tên của bạn <span className="form-required">*</span>
-            </span>
-            <input
-              className={`form-input ${errors.name ? "form-input--error" : ""}`}
-              type="text"
-              placeholder="VD: Ngọc Hân"
-              value={data.name}
-              onChange={(e) =>
-                setData((d) => ({ ...d, name: e.target.value }))
-              }
-            />
+          <div className="form-group">
+            <div className="float-field">
+              <input
+                id="f-name"
+                className={`form-input ${errors.name ? "form-input--error" : ""}`}
+                type="text"
+                placeholder=" "
+                autoComplete="name"
+                value={data.name}
+                onChange={(e) => setData((d) => ({ ...d, name: e.target.value }))}
+              />
+              <label htmlFor="f-name">
+                Tên của bạn <span className="form-required">*</span>
+              </label>
+            </div>
             {errors.name && <span className="form-error">{errors.name}</span>}
-          </label>
+          </div>
 
           {/* Số điện thoại */}
-          <label className="form-label">
-            <span>
-              Số điện thoại <span className="form-required">*</span>
-            </span>
-            <input
-              className={`form-input ${
-                errors.phone ? "form-input--error" : ""
-              }`}
-              type="tel"
-              placeholder="VD: 0901234567"
-              value={data.phone}
-              onChange={(e) =>
-                setData((d) => ({ ...d, phone: e.target.value }))
-              }
-            />
-            {errors.phone && (
-              <span className="form-error">{errors.phone}</span>
-            )}
-          </label>
+          <div className="form-group">
+            <div className="float-field">
+              <input
+                id="f-phone"
+                className={`form-input ${errors.phone ? "form-input--error" : ""}`}
+                type="tel"
+                placeholder=" "
+                autoComplete="tel"
+                value={data.phone}
+                onChange={(e) => setData((d) => ({ ...d, phone: e.target.value }))}
+              />
+              <label htmlFor="f-phone">
+                Số điện thoại <span className="form-required">*</span>
+              </label>
+            </div>
+            {errors.phone && <span className="form-error">{errors.phone}</span>}
+          </div>
 
           {/* Email */}
-          <label className="form-label">
-            <span>Email (không bắt buộc — nhận mail xác nhận)</span>
-            <input
-              className={`form-input ${
-                errors.email ? "form-input--error" : ""
-              }`}
-              type="email"
-              placeholder="VD: ban@email.com"
-              value={data.email}
-              onChange={(e) =>
-                setData((d) => ({ ...d, email: e.target.value }))
-              }
-            />
-            {errors.email && (
-              <span className="form-error">{errors.email}</span>
-            )}
-          </label>
+          <div className="form-group">
+            <div className="float-field">
+              <input
+                id="f-email"
+                className={`form-input ${errors.email ? "form-input--error" : ""}`}
+                type="email"
+                placeholder=" "
+                autoComplete="email"
+                value={data.email}
+                onChange={(e) => setData((d) => ({ ...d, email: e.target.value }))}
+              />
+              <label htmlFor="f-email">Email (không bắt buộc)</label>
+            </div>
+            {errors.email && <span className="form-error">{errors.email}</span>}
+          </div>
 
           {/* Ghi chú */}
-          <label className="form-label">
-            <span>Ghi chú (không bắt buộc)</span>
-            <textarea
-              className="form-input form-textarea"
-              placeholder="VD: Mình muốn mi cong nhẹ, tông nâu…"
-              rows={3}
-              value={data.note}
-              onChange={(e) =>
-                setData((d) => ({ ...d, note: e.target.value }))
-              }
-            />
-          </label>
+          <div className="form-group">
+            <div className="float-field">
+              <textarea
+                id="f-note"
+                className="form-input form-textarea"
+                rows={3}
+                placeholder=" "
+                value={data.note}
+                onChange={(e) => setData((d) => ({ ...d, note: e.target.value }))}
+              />
+              <label htmlFor="f-note">Ghi chú (không bắt buộc)</label>
+            </div>
+          </div>
 
           {/* Turnstile */}
           <div>
@@ -599,10 +606,6 @@ export default function BookingWizard() {
 
   /* ── TRANG XÁC NHẬN THÀNH CÔNG ── */
   if (submitted) {
-    const siteUrl =
-      typeof window !== "undefined" ? window.location.origin : "";
-    const cancelUrl = `${siteUrl}/dat-lich?cancel=${bookingId}`;
-    const rescheduleUrl = `${siteUrl}/dat-lich?reschedule=${bookingId}`;
 
     return (
       <main className="container section">
@@ -674,14 +677,6 @@ export default function BookingWizard() {
           {/* Nút nhắn Zalo */}
           <div className="confirm-actions" style={{ marginTop: 20 }}>
             <a
-              href={zaloUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn interactive zalo-btn"
-            >
-              💬 Nhắn Zalo cho tiệm
-            </a>
-            <a
               href={`tel:${shop.phone}`}
               className="btn btn--white interactive"
             >
@@ -697,22 +692,30 @@ export default function BookingWizard() {
             </p>
           )}
 
-          {/* Link hủy / đổi */}
-          <div
-            className="confirm-links"
-            style={{ marginTop: 16, fontSize: "0.95rem" }}
-          >
-            <p className="muted">
-              Cần thay đổi?{" "}
-              <a href={cancelUrl} style={{ color: "var(--accent)" }}>
-                Hủy lịch
-              </a>{" "}
-              ·{" "}
-              <a href={rescheduleUrl} style={{ color: "var(--accent)" }}>
-                Đổi lịch
-              </a>
+          {/* Hủy / đổi lịch: hiện chưa tự làm trên web, hướng khách nhắn Zalo kèm mã lịch */}
+          <section className="change-box" aria-label="Hủy hoặc đổi lịch">
+            <h2>🔁 Cần hủy hoặc đổi lịch?</h2>
+            <p>
+              Nhắn Zalo cho tiệm kèm mã lịch <strong className="change-box__code">{bookingId}</strong>{" "}
+              — tiệm sẽ xử lý giúp bạn.
             </p>
-          </div>
+            <div className="change-box__actions">
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new Event("open-zalo"))}
+                className="btn btn--white interactive"
+              >
+                ❌ Hủy lịch
+              </button>
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new Event("open-zalo"))}
+                className="btn btn--blue interactive"
+              >
+                📅 Đổi lịch
+              </button>
+            </div>
+          </section>
 
           <p className="muted" style={{ marginTop: 16 }}>
             Chúng mình sẽ liên hệ xác nhận qua SĐT của bạn. 💕

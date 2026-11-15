@@ -33,10 +33,6 @@ export default function ShoppingPage() {
           </li>
         ))}
       </ul>
-
-      <p className="callout" style={{ marginTop: 40 }}>
-        📌 Bản demo: sản phẩm và giá là dữ liệu mẫu, chưa có giỏ hàng.
-      </p>
     </main>
   );
 }

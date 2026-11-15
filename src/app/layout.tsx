@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import SiteHeader from "@/components/SiteHeader";
+import ZaloFloat from "@/components/ZaloFloat";
 import { shop } from "@/data/shop";
 import "@/styles/tokens.css";
 import "@/styles/base.css";
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <footer className="container">
           <p className="footer-line">{shop.name} · {shop.tagline}</p>
         </footer>
+        <ZaloFloat />
       </body>
     </html>
   );

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { isAdmin } from "@/lib/admin-auth";
-import LogoutButton from "@/components/admin/LogoutButton";
+import AdminNav from "@/components/admin/AdminNav";
 import { shop } from "@/data/shop";
 
 export const metadata: Metadata = {
@@ -21,16 +21,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             🗂️ {shop.name}
             <span className="admin-bar__label">&nbsp;· quản lý</span>
           </Link>
-          {loggedIn && (
-            <nav className="admin-bar__nav" aria-label="Menu quản lý">
-              <Link href="/admin" className="admin-bar__link">Lịch</Link>
-              <Link href="/admin/mat-khau" className="admin-bar__link admin-bar__link--plain" aria-label="Đổi mật khẩu">
-                🔒
-                <span className="admin-bar__label">Mật khẩu</span>
-              </Link>
-              <LogoutButton />
-            </nav>
-          )}
+          {loggedIn && <AdminNav />}
         </div>
       </header>
       {children}

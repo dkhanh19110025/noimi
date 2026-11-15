@@ -2,7 +2,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/admin-auth";
 import { getSupabase } from "@/lib/supabase-server";
-import { vnDateStr } from "@/data/booking";
 import { formatPrice } from "@/data/combos";
 import {
   fmtDate,
@@ -46,13 +45,12 @@ export default async function AdminBookingPage({
   if (!b) notFound();
 
   const message = msg ? MESSAGES[msg] : undefined;
-  const dayParam = vnDateStr(Date.parse(b.starts_at));
   const phone: string = b.customer_phone;
 
   return (
     <main className="container section admin-main">
-      <Link href={`/admin?d=${dayParam}`} className="btn btn--white interactive">
-        ← Về lịch ngày
+      <Link href="/admin" className="btn btn--white interactive">
+        ← Về danh sách lịch
       </Link>
 
       <h1 style={{ marginTop: 20, fontSize: "clamp(2rem, 7vw, 3rem)" }}>{b.customer_name}</h1>

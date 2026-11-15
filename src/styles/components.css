@@ -353,8 +353,12 @@
 }
 .combo-card { cursor: pointer; }
 .combo-card__check {
-  padding: 6px 16px;
-  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 16px;
   font-family: var(--font-display);
   font-size: 1rem;
   background: var(--green);
@@ -595,6 +599,7 @@
   padding-block: 10px;
 }
 .admin-bar__name {
+  white-space: nowrap;
   display: inline-flex;
   align-items: center;
   min-height: 44px;
@@ -606,24 +611,31 @@
 .admin-bar__nav {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 .admin-bar__link {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  gap: 6px;
   min-height: 44px;
-  padding: 6px 16px;
+  padding: 6px 14px;
   font-family: var(--font-display);
+  font-size: 1rem;
+  line-height: 1;
+  white-space: nowrap;
   color: var(--ink);
   text-decoration: none;
-  background: var(--yellow);
+  background: var(--white);
   border: var(--border);
   border-radius: var(--radius-pill);
   box-shadow: var(--shadow-sm);
+  cursor: pointer;
 }
-.admin-bar__logout {
-  padding-inline: 16px;
-}
+.admin-bar__link.is-active { background: var(--yellow); }
+.admin-bar__link:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+.admin-bar__link:hover { transform: translate(-1px, -1px); box-shadow: var(--shadow); }
+.admin-bar__link:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--ink); }
 
 .admin-login {
   max-width: 460px;
@@ -741,14 +753,10 @@
 }
 
 /* Nút "Mật khẩu" trên thanh admin: trên điện thoại chỉ hiện biểu tượng cho gọn */
-.admin-bar__link--plain {
-  background: var(--white);
-  gap: 6px;
-}
 .admin-bar__label {
   display: none;
 }
-@media (min-width: 480px) {
+@media (min-width: 640px) {
   .admin-bar__label {
     display: inline;
   }
@@ -765,3 +773,124 @@
   box-shadow: var(--shadow-sm); cursor: pointer;
 }
 .password-toggle:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+
+.combo-card__next { padding: 8px 18px; font-size: 1rem; background: var(--yellow); min-height: 44px; }
+
+/* Điện thoại: thanh nút Tiếp/Quay lại luôn dính đáy màn hình */
+@media (max-width: 767px) {
+  .step-actions--sticky {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    margin-inline: calc(-1 * clamp(16px, 4vw, 48px));
+    padding: 12px clamp(16px, 4vw, 48px) calc(12px + env(safe-area-inset-bottom));
+    background: var(--paper);
+    border-top: var(--border);
+  }
+  .step-actions--sticky .btn { flex: 1 1 0; min-height: 48px; }
+  .combo-card__next { flex: 1 1 auto; }
+}
+
+/* Danh sách lịch hẹn: gom theo ngày */
+.admin-title { text-align: center; }
+.admin-tabs { display: flex; gap: 10px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
+.admin-tabs .pill { text-decoration: none; color: var(--ink); min-height: 44px; display: inline-flex; align-items: center; }
+.pill--white { background: var(--white); }
+.admin-day { margin-top: 28px; }
+.admin-day__title {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 10px;
+  font-size: 1.25rem; padding-bottom: 6px; border-bottom: 2px dashed var(--ink-faint);
+}
+.admin-day .admin-list { margin-top: 14px; }
+.admin-item__body h3 { font-size: 1.3rem; }
+.admin-item__combo { margin-top: 2px; }
+.admin-item__line { margin-top: 2px; font-size: 1rem; word-break: break-word; }
+
+/* ── Nhãn nổi: nằm trong khung, bấm vào thì bay lên trên ── */
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.float-field { position: relative; padding-top: 28px; display: flex; flex-direction: column; }
+.float-field > label {
+  position: absolute;
+  left: 17px;
+  top: calc(28px + 23px);
+  transform: translateY(-50%);
+  max-width: calc(100% - 34px);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--ink-soft);
+  pointer-events: none;
+  transition: top .15s ease, left .15s ease, font-size .15s ease, color .15s ease;
+}
+.float-field > .form-input:focus ~ label,
+.float-field > .form-input:not(:placeholder-shown) ~ label {
+  top: 10px;
+  left: 2px;
+  max-width: 100%;
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+@media (prefers-reduced-motion: reduce) {
+  .float-field > label { transition: none; }
+}
+
+/* ── Khung hủy / đổi lịch ── */
+.change-box {
+  max-width: 480px;
+  margin: 20px auto 0;
+  padding: 16px 18px 18px;
+  background: var(--orange);
+  border: var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+.change-box h2 { font-size: 1.25rem; }
+.change-box p { margin-top: 6px; font-size: 1rem; color: var(--ink); }
+.change-box__code {
+  display: inline-block; padding: 0 8px;
+  background: var(--white); border: var(--border); border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+}
+.change-box__actions { display: flex; gap: 12px; margin-top: 14px; }
+.change-box__actions .btn { flex: 1 1 0; min-height: 48px; justify-content: center; text-align: center; }
+
+/* ── Nút Zalo nổi + khung mã QR ── */
+.zalo-float {
+  position: fixed;
+  right: 16px;
+  bottom: 88px; /* chừa chỗ cho thanh nút dính đáy ở bước đặt lịch */
+  z-index: 40;
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: 44px; padding: 6px 14px;
+  font-family: var(--font-display); font-size: 1rem;
+  color: #fff; background: #0068ff;
+  border: var(--border); border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-sm); cursor: pointer;
+}
+.zalo-float:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+@media (min-width: 768px) { .zalo-float { bottom: 20px; right: 20px; } }
+
+.zalo-modal {
+  position: fixed; inset: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px; background: rgba(31, 27, 22, .45);
+}
+.zalo-modal__card {
+  width: min(100%, 340px); padding: 20px;
+  background: var(--card); border: var(--border);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow);
+  text-align: center;
+}
+.zalo-modal__card h2 { font-size: 1.3rem; }
+.zalo-modal__qr {
+  display: flex; align-items: center; justify-content: center;
+  width: 240px; height: 240px; max-width: 100%; margin: 14px auto 0;
+  background: var(--white); border: var(--border); border-radius: var(--radius-md);
+}
+.zalo-modal__qr img { width: 100%; height: auto; display: block; border-radius: var(--radius-sm); }
+.zalo-modal__phone { margin-top: 10px; font-family: var(--font-mono); }
+.zalo-modal__actions { display: flex; gap: 10px; margin-top: 14px; }
+.zalo-modal__actions .btn { flex: 1 1 0; min-height: 44px; justify-content: center; text-align: center; }
