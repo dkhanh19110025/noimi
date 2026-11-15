@@ -80,7 +80,7 @@ export default async function AdminBookingPage({
         <h2 style={{ fontSize: "1.3rem", marginBottom: 12 }}>📋 Chi tiết lịch</h2>
         <div className="summary-row"><span>Mã:</span><strong>{b.code}</strong></div>
         <div className="summary-row"><span>Combo:</span><strong>{b.combo_name}</strong></div>
-        <div className="summary-row"><span>Giá:</span><strong>{formatPrice(b.price)}</strong></div>
+        {b.price > 0 && <div className="summary-row"><span>Giá:</span><strong>{formatPrice(b.price)}</strong></div>}
         <div className="summary-row"><span>Ngày:</span><strong>{fmtDate(b.starts_at)}</strong></div>
         <div className="summary-row">
           <span>Giờ:</span>

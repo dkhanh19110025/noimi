@@ -98,7 +98,7 @@ export default async function AdminHistoryPage({
               <div className="admin-item__body">
                 <h3>{r.customer_name}</h3>
                 <p className="admin-item__combo">
-                  {r.combo_name} · <strong>{formatPrice(r.price)}</strong>
+                  {r.combo_name}{r.price > 0 && <> · <strong>{formatPrice(r.price)}</strong></>}
                 </p>
                 <p className="muted admin-item__line">📞 {r.customer_phone}</p>
                 {r.customer_email && <p className="muted admin-item__line">✉️ {r.customer_email}</p>}

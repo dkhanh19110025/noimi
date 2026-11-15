@@ -2,8 +2,11 @@
 export type Combo = {
   id: string;
   name: string;
+  /** Câu mở đầu (hiện kèm ✨) */
+  tagline: string;
   description: string;
-  price: number; // VND
+  /** VND. Hiện chưa chốt giá nên = 0 và KHÔNG hiển thị cho khách; khi có giá chỉ cần điền vào đây. */
+  price: number;
   durationMinutes: number;
   imageUrl: string;
   color: "blue" | "pink" | "green";
@@ -11,30 +14,33 @@ export type Combo = {
 
 export const combos: Combo[] = [
   {
-    id: "tu-nhien",
-    name: "Nối mi tự nhiên",
-    description: "Mi nhẹ, mỏng, nhìn như mi thật. Hợp đi làm, đi học.",
-    price: 150000,
-    durationMinutes: 60,
-    imageUrl: "/combos/tu-nhien.svg",
+    id: "uon-mi",
+    name: "Uốn mi",
+    tagline: "Đẹp và cuốn hút hơn trong từng ánh nhìn.",
+    description: "Đánh thức nét dịu dàng với hàng mi cong tự nhiên.",
+    price: 0,
+    durationMinutes: 30,
+    imageUrl: "/combos/uonmi.webp",
     color: "blue",
   },
   {
-    id: "volume",
-    name: "Nối mi volume",
-    description: "Mi dày, cong vút, ánh nhìn có chiều sâu. Hợp đi tiệc.",
-    price: 250000,
-    durationMinutes: 90,
-    imageUrl: "/combos/volume.svg",
+    id: "noi-mi",
+    name: "Nối mi",
+    tagline: "Đẹp và cuốn hút hơn trong từng ánh nhìn.",
+    description: "Nâng tầm ánh nhìn, tăng thêm sức hút cho đôi mắt.",
+    price: 0,
+    durationMinutes: 30,
+    imageUrl: "/combos/noimi.webp",
     color: "pink",
   },
   {
-    id: "hybrid",
-    name: "Nối mi hybrid",
-    description: "Pha giữa tự nhiên và volume. Dày vừa, không bị nặng mắt.",
-    price: 200000,
-    durationMinutes: 75,
-    imageUrl: "/combos/hybrid.svg",
+    id: "cham-soc-da",
+    name: "Chăm sóc da",
+    tagline: "Làn da khỏe là nền tảng của vẻ đẹp rạng rỡ.",
+    description: "Nâng niu làn da, nuôi dưỡng vẻ đẹp tự nhiên từ bên trong.",
+    price: 0,
+    durationMinutes: 30,
+    imageUrl: "/combos/da.webp",
     color: "green",
   },
 ];

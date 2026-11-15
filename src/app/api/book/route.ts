@@ -24,31 +24,10 @@ const bodySchema = z.object({
   phone: z.string().trim().min(1).max(20),
   email: z.string().trim().max(200).optional().default(""),
   note: z.string().trim().max(500).optional().default(""),
-  turnstileToken: z.string().min(1),
 });
 
 function fail(status: number, code: string, message: string) {
   return NextResponse.json({ ok: false, code, error: message }, { status });
-}
-
-async function verifyTurnstile(token: string): Promise<boolean> {
-  const secret =
-    process.env.TURNSTILE_SECRET_KEY ?? "1x0000000000000000000000000000000AA"; // khóa thử
-  try {
-    const res = await fetch(
-      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ secret, response: token }),
-      }
-    );
-    const json = await res.json();
-    return json.success === true;
-  } catch {
-    console.warn("[Turnstile] Không gọi được Cloudflare");
-    return process.env.NODE_ENV === "development";
-  }
 }
 
 /** Gửi mail xác nhận (chưa tích hợp). Không ghi thông tin cá nhân vào log. */
@@ -87,10 +66,8 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    // Chạy song song: xác minh Turnstile, tính giờ trống, đếm lịch sắp tới của SĐT
-    // (trước đây chạy nối tiếp, mỗi bước thêm một lượt đi-về mạng).
-    const [turnstileOk, free, countRes] = await Promise.all([
-      verifyTurnstile(body.turnstileToken),
+    // Chạy song song: tính giờ trống, đếm lịch sắp tới của SĐT
+    const [free, countRes] = await Promise.all([
       getFreeSlots(db, body.date, combo.durationMinutes),
       db
         .from("bookings")
@@ -100,9 +77,6 @@ export async function POST(req: NextRequest) {
         .gt("starts_at", new Date().toISOString()),
     ]);
 
-    if (!turnstileOk) {
-      return fail(403, "TURNSTILE", "Xác minh bảo mật thất bại. Vui lòng thử lại.");
-    }
     if (!free.includes(body.time)) {
       return fail(
         409,

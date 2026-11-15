@@ -7,8 +7,8 @@ import "@/styles/base.css";
 import "@/styles/components.css";
 
 export const metadata: Metadata = {
-  title: "linhhue · Nối mi",
-  description: "Chọn combo, chọn giờ, đặt lịch nối mi trong vài bước.",
+  title: "Linh Hue Facial & Lash",
+  description: "Chọn dịch vụ, chọn giờ, đặt lịch uốn mi, nối mi, chăm sóc da trong vài bước.",
 };
 
 export const viewport: Viewport = {
@@ -31,7 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SiteHeader />
         {children}
         <footer className="container">
-          <p className="footer-line">{shop.name} · {shop.tagline}</p>
+          <p className="footer-line">{shop.name}</p>
         </footer>
         <ZaloFloat />
       </body>

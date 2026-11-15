@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { combos, formatDuration, formatPrice, type Combo } from "@/data/combos";
+import { combos, formatDuration, type Combo } from "@/data/combos";
 import {
   isHoliday,
   toDateStr,
@@ -12,7 +12,7 @@ import {
   MIN_HOURS_AHEAD,
 } from "@/data/booking";
 import { shop } from "@/data/shop";
-import Turnstile from "@/components/Turnstile";
+import FeedbackStrip from "@/components/FeedbackStrip";
 
 /* ── types ── */
 type BookingData = {
@@ -44,7 +44,6 @@ export default function BookingWizard() {
   const [submitted, setSubmitted] = useState(false);
   const [bookingId, setBookingId] = useState("");
   const [serverError, setServerError] = useState("");
-  const [turnstileToken, setTurnstileToken] = useState("");
   const [slots, setSlots] = useState<string[]>([]);
   const [slotsStatus, setSlotsStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
   const [slotsError, setSlotsError] = useState("");
@@ -82,14 +81,6 @@ export default function BookingWizard() {
   };
   const goBack = () => setStep((s) => Math.max(s - 1, 1));
 
-  const onTurnstileToken = useCallback((token: string) => {
-    setTurnstileToken(token);
-  }, []);
-
-  const onTurnstileExpire = useCallback(() => {
-    setTurnstileToken("");
-  }, []);
-
   /* ── Zalo deep link ── */
 
   /* ── STEP 1 — chọn combo ── */
@@ -97,15 +88,14 @@ export default function BookingWizard() {
     return (
       <>
         <div className="step-header">
-          <span className="badge-tilt">Đặt lịch nối mi</span>
+          <span className="badge-tilt">Đặt lịch</span>
           <span className="pill pill--blue">Bước 1/4</span>
         </div>
 
         <h1 style={{ marginTop: 24 }}>Chọn combo</h1>
-        <p className="subtitle">— mi xinh trong vài phút</p>
+        <p className="subtitle">— chọn dịch vụ bạn thích</p>
         <p className="muted" style={{ marginTop: 12 }}>
-          Chọn kiểu <span className="hl">bạn thích</span> — xem giá — xem thời
-          gian.
+          Chọn <span className="hl">dịch vụ</span> — xem thời gian — đặt lịch.
         </p>
 
         <ul className="combo-grid" style={{ listStyle: "none", padding: 0 }}>
@@ -133,18 +123,16 @@ export default function BookingWizard() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={c.imageUrl}
-                  alt={`Hình mẫu ${c.name}`}
+                  alt={`Hình ${c.name}`}
                   width={400}
                   height={300}
                 />
               </div>
               <div className="combo-card__body">
                 <h2 className="combo-card__name">{c.name}</h2>
+                <p className="combo-card__desc">✨ {c.tagline}</p>
                 <p className="combo-card__desc">{c.description}</p>
                 <div className="combo-card__meta">
-                  <span className="pill pill--yellow">
-                    💰 {formatPrice(c.price)}
-                  </span>
                   <span className="pill pill--green">
                     ⏱ {formatDuration(c.durationMinutes)}
                   </span>
@@ -195,13 +183,13 @@ export default function BookingWizard() {
     return (
       <>
         <div className="step-header">
-          <span className="badge-tilt">Đặt lịch nối mi</span>
+          <span className="badge-tilt">Đặt lịch</span>
           <span className="pill pill--blue">Bước 2/4</span>
         </div>
 
         <h1 style={{ marginTop: 24 }}>Chọn ngày</h1>
         <p className="subtitle">
-          — {data.combo?.name} · {formatPrice(data.combo?.price ?? 0)}
+          — {data.combo?.name}
         </p>
         <p className="muted" style={{ marginTop: 12 }}>
           Đặt trước tối đa{" "}
@@ -280,7 +268,7 @@ export default function BookingWizard() {
     return (
       <>
         <div className="step-header">
-          <span className="badge-tilt">Đặt lịch nối mi</span>
+          <span className="badge-tilt">Đặt lịch</span>
           <span className="pill pill--blue">Bước 3/4</span>
         </div>
 
@@ -358,7 +346,7 @@ export default function BookingWizard() {
     );
   }
 
-  /* ── STEP 4 — thông tin khách + Turnstile ── */
+  /* ── STEP 4 — thông tin khách ── */
   function StepInfo() {
     const validate = (): boolean => {
       const e: Record<string, string> = {};
@@ -373,9 +361,6 @@ export default function BookingWizard() {
         !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email.trim())
       ) {
         e.email = "Email không hợp lệ.";
-      }
-      if (!turnstileToken) {
-        e.turnstile = "Vui lòng hoàn thành xác minh bảo mật.";
       }
       setErrors(e);
       return Object.keys(e).length === 0;
@@ -400,7 +385,6 @@ export default function BookingWizard() {
             phone: data.phone.trim(),
             email: data.email.trim(),
             note: data.note.trim(),
-            turnstileToken,
           }),
         });
 
@@ -411,7 +395,6 @@ export default function BookingWizard() {
             // Giờ vừa bị người khác đặt: quay lại chọn giờ, tải lại danh sách
             setNotice(json.error);
             setData((d) => ({ ...d, time: "" }));
-            setTurnstileToken("");
             setStep(3);
           } else {
             setServerError(json.error ?? "Có lỗi xảy ra.");
@@ -432,7 +415,7 @@ export default function BookingWizard() {
     return (
       <>
         <div className="step-header">
-          <span className="badge-tilt">Đặt lịch nối mi</span>
+          <span className="badge-tilt">Đặt lịch</span>
           <span className="pill pill--blue">Bước 4/4</span>
         </div>
 
@@ -512,17 +495,6 @@ export default function BookingWizard() {
               <label htmlFor="f-note">Ghi chú (không bắt buộc)</label>
             </div>
           </div>
-
-          {/* Turnstile */}
-          <div>
-            <Turnstile
-              onToken={onTurnstileToken}
-              onExpire={onTurnstileExpire}
-            />
-            {errors.turnstile && (
-              <span className="form-error">{errors.turnstile}</span>
-            )}
-          </div>
         </div>
 
         {/* Tóm tắt */}
@@ -533,10 +505,6 @@ export default function BookingWizard() {
           <div className="summary-row">
             <span>Combo:</span>
             <strong>{data.combo?.name}</strong>
-          </div>
-          <div className="summary-row">
-            <span>Giá:</span>
-            <strong>{formatPrice(data.combo?.price ?? 0)}</strong>
           </div>
           <div className="summary-row">
             <span>Thời lượng:</span>
@@ -602,10 +570,6 @@ export default function BookingWizard() {
             <div className="summary-row">
               <span>Combo:</span>
               <strong>{data.combo?.name}</strong>
-            </div>
-            <div className="summary-row">
-              <span>Giá:</span>
-              <strong>{formatPrice(data.combo?.price ?? 0)}</strong>
             </div>
             <div className="summary-row">
               <span>Thời lượng:</span>
@@ -707,7 +671,6 @@ export default function BookingWizard() {
               setBookingId("");
               setErrors({});
               setServerError("");
-              setTurnstileToken("");
             }}
           >
             🔄 Đặt lịch mới
@@ -720,6 +683,8 @@ export default function BookingWizard() {
   /* ── RENDER ── */
   return (
     <main className="container section">
+      <FeedbackStrip />
+
       {/* Progress bar */}
       <div className="progress-bar">
         {[1, 2, 3, 4].map((s) => (

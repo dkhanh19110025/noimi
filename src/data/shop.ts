@@ -1,6 +1,5 @@
 export const shop = {
-  name: "linhhue",
-  tagline: "Nối mi xinh, nhẹ tênh",
+  name: "Linh Hue Facial & Lash",
   address: "Nguyễn Văn Khối, Phường 8, Gò Vấp, TP.HCM",
   /** Tọa độ tiệm: bấm "Xem trên Google Maps" sẽ ghim đúng điểm này */
   lat: 10.84331,

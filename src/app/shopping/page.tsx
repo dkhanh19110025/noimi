@@ -14,7 +14,7 @@ export default function ShoppingPage() {
       <h1 style={{ marginTop: 24 }}>Đồ chăm mi</h1>
       <p className="subtitle">— giữ mi đẹp lâu hơn</p>
       <p className="muted" style={{ marginTop: 12 }}>
-        Mua tại tiệm — xem giá — hỏi <span className="hl">linhhue</span> qua Zalo.
+        Mua tại tiệm — xem giá — hỏi <span className="hl">Linh Hue Facial & Lash</span> qua Zalo.
       </p>
 
       <ul className="combo-grid" style={{ listStyle: "none", padding: 0 }}>

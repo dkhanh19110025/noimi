@@ -943,3 +943,88 @@
 /* 3 tab admin: chia deu 3 cot de luon nam tren mot hang */
 .admin-tabs { display: grid; grid-template-columns: repeat(3, 1fr); max-width: 520px; margin-inline: auto; }
 .admin-tabs .pill { justify-content: center; padding-inline: 6px; font-size: .95rem; gap: 4px; }
+
+/* Băng chuyền feedback */
+.feedback-strip {
+  margin-bottom: 20px;
+}
+.feedback-strip__title {
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--ink-soft);
+}
+.feedback-strip__viewport {
+  overflow: hidden;
+  padding: 4px 4px 8px;
+}
+.feedback-strip__track {
+  display: flex;
+  gap: 12px;
+  width: max-content;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  animation: feedback-scroll 30s linear infinite;
+}
+.feedback-strip__viewport:hover .feedback-strip__track {
+  animation-play-state: paused;
+}
+.feedback-strip__item {
+  flex: 0 0 auto;
+  width: 180px;
+  height: 120px;
+  background: var(--card);
+  border: var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.feedback-strip__btn {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+}
+.feedback-strip__item img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* ảnh khác tỉ lệ vẫn vừa khung, không bị cắt */
+}
+@keyframes feedback-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(calc(-50% - 6px)); } /* nửa danh sách + nửa khoảng cách */
+}
+@media (prefers-reduced-motion: reduce) {
+  .feedback-strip__viewport { overflow-x: auto; }
+  .feedback-strip__track { animation: none; }
+}
+
+/* Xem lớn feedback */
+.feedback-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(31, 27, 22, 0.85);
+}
+.feedback-lightbox img {
+  max-width: 100%;
+  max-height: calc(100dvh - 96px);
+  background: var(--white);
+  border: var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+}
+.feedback-lightbox__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+}
