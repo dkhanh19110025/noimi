@@ -1061,3 +1061,110 @@
 .star-input__hint { margin-left: 8px; }
 /* Ô bẫy bot: ẩn khỏi người dùng, vẫn nằm trong form */
 .hp-field { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+/* ── Cửa hàng: giỏ, yêu thích, số lượng ── */
+.nav__badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 22px; height: 22px; padding: 0 6px;
+  font-size: .9rem; background: var(--pink);
+  border: var(--border); border-radius: var(--radius-pill);
+}
+.product-card { position: relative; }
+.product-tile { overflow: hidden; }
+.product-tile__img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.fav-btn {
+  position: absolute; top: 12px; right: 12px; z-index: 2;
+  width: 44px; height: 44px; font-size: 1.3rem; cursor: pointer;
+  background: var(--white); border: var(--border); border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-sm);
+}
+.fav-btn.is-on { background: var(--pink); }
+.fav-btn:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+.product-card .btn:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
+
+.cart-line { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.cart-line__img { width: 88px; flex: none; }
+.cart-line__img .product-tile { height: 88px; font-size: 2.6rem; border: var(--border); border-radius: var(--radius-md); }
+.cart-line__body { flex: 1 1 200px; min-width: 0; }
+.cart-line__sum { font-family: var(--font-display); font-size: 1.2rem; margin-left: auto; }
+.qty { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+.qty__btn {
+  width: 44px; height: 44px; font-size: 1.4rem; cursor: pointer;
+  background: var(--yellow); border: var(--border); border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm); font-family: var(--font-display);
+}
+.qty__btn:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
+.qty__btn:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+.qty__num { min-width: 32px; text-align: center; font-family: var(--font-display); font-size: 1.3rem; }
+
+/* Admin: kho, tab */
+.stock-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.stock-row form { display: inline; }
+.admin-prod { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+.admin-prod__icon { width: 56px; height: 56px; display: grid; place-items: center; font-size: 2rem; border: var(--border); border-radius: var(--radius-md); overflow: hidden; flex: none; }
+.admin-prod__icon img { width: 100%; height: 100%; object-fit: cover; }
+.admin-prod__body { flex: 1 1 220px; min-width: 0; }
+.admin-prod--hidden { opacity: .65; }
+.admin-form-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.color-pick { display: flex; gap: 8px; flex-wrap: wrap; }
+.color-pick label { cursor: pointer; }
+.color-pick input { position: absolute; opacity: 0; }
+.color-pick span { display: inline-block; padding: 6px 14px; border: var(--border); border-radius: var(--radius-pill); box-shadow: var(--shadow-sm); }
+.color-pick input:checked + span { outline: 3px solid var(--ink); outline-offset: 2px; }
+.color-pick input:focus-visible + span { outline: 3px solid var(--ink); outline-offset: 2px; }
+
+/* Đánh giá sản phẩm */
+.product-card__rating { margin: 0; font-size: 1rem; }
+.link-btn { padding: 4px 0; min-height: 36px; background: none; border: 0; cursor: pointer; font: inherit; color: var(--ink); text-align: left; }
+.link-btn:hover { text-decoration: underline; }
+.link-btn:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+.review-list { list-style: none; margin: 8px 0 0; padding: 10px 12px; max-height: 220px; overflow: auto; display: grid; gap: 10px; background: var(--white); border: var(--border); border-radius: var(--radius-md); }
+.review-list p { margin: 4px 0 0; font-size: 1rem; color: var(--ink-soft); }
+
+/* Nút giỏ hàng nổi: nằm ngay trên nút Zalo */
+.cart-float {
+  position: fixed; right: 16px; bottom: 140px; z-index: 40;
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: 44px; padding: 6px 14px;
+  font-family: var(--font-display); font-size: 1rem;
+  color: var(--ink); background: var(--yellow); text-decoration: none;
+  border: var(--border); border-radius: var(--radius-pill); box-shadow: var(--shadow-sm);
+}
+.cart-float:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+@media (min-width: 768px) { .cart-float { bottom: 72px; right: 20px; } }
+
+/* Nút giỏ hàng và nút Zalo cùng kích thước */
+.cart-float, .zalo-float { width: 132px; justify-content: center; box-sizing: border-box; }
+.cart-float, .zalo-float { width: 152px; height: 44px; white-space: nowrap; padding-inline: 10px; }
+
+/* Menu admin trên điện thoại: lưới 4 cột, biểu tượng trên chữ dưới */
+.admin-bar__icon { font-size: 1.2rem; line-height: 1; }
+@media (max-width: 767px) {
+  .admin-bar__inner { flex-direction: column; align-items: stretch; gap: 4px; }
+  .admin-bar__name { min-height: 40px; }
+  .admin-bar__nav {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%;
+    padding-bottom: 4px;
+  }
+  .admin-bar__link {
+    flex-direction: column; gap: 2px; min-height: 56px; padding: 6px 2px;
+    font-size: .9rem; border-radius: var(--radius-md);
+  }
+}
+@media (min-width: 768px) {
+  /* Nhiều nút: tự xuống dòng thay vì tràn khỏi màn hình */
+  .admin-bar__nav { flex-wrap: wrap; justify-content: flex-end; }
+  .admin-bar__link { padding-inline: 12px; }
+}
+
+/* Giỏ hàng: ô hình vuông đúng bằng khung 88px (không dùng tỉ lệ 4:3 của thẻ combo) */
+.cart-line__img .product-tile {
+  width: 100%; height: auto; aspect-ratio: 1 / 1;
+  border: var(--border); border-radius: var(--radius-md);
+}
+
+/* Khung chờ khi chuyển trang */
+.skeleton { height: 16px; margin: 10px 0; background: linear-gradient(90deg, rgba(120,100,60,.10), rgba(120,100,60,.22), rgba(120,100,60,.10)); background-size: 200% 100%; border-radius: var(--radius-sm); animation: skeleton 1.2s ease-in-out infinite; }
+.skeleton--title { height: 40px; width: 55%; margin-top: 24px; }
+@keyframes skeleton { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } }

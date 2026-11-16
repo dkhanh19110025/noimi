@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/admin-auth";
 import { getSupabase } from "@/lib/supabase-server";
+import { invalidateCatalog } from "@/lib/catalog";
 import { findAffected, parseBlockInput } from "@/lib/blocks";
 
 const STATUSES = ["confirmed", "arrived", "cancelled", "no_show", "done"] as const;
@@ -128,19 +129,18 @@ export async function deleteBlock(formData: FormData) {
 
 /* ── Đánh giá & góp ý của khách ── */
 
-/** Duyệt (hiện công khai) hoặc ẩn lại một đánh giá. */
-export async function setReviewStatus(formData: FormData) {
+/** Ẩn / hiện lại một đánh giá sản phẩm (đánh giá thật nên mặc định hiện sẵn). */
+export async function setReviewHidden(formData: FormData) {
   await requireAdmin();
   const id = readId(formData);
-  const status = String(formData.get("status") ?? "");
-  if (status !== "approved" && status !== "pending") redirect("/admin/phan-hoi");
-
+  const hidden = String(formData.get("hidden")) === "true";
   const db = getSupabase();
   if (!db) redirect("/admin/phan-hoi?msg=error");
-  const { error } = await db.from("reviews").update({ status }).eq("id", id);
+  const { error } = await db.from("product_reviews").update({ hidden }).eq("id", id);
   revalidatePath("/admin/phan-hoi");
-  revalidatePath("/danh-gia");
-  redirect(`/admin/phan-hoi?msg=${error ? "error" : status === "approved" ? "approved" : "hidden"}`);
+  invalidateCatalog();
+  revalidatePath("/shopping");
+  redirect(`/admin/phan-hoi?msg=${error ? "error" : hidden ? "hidden" : "shown"}`);
 }
 
 /** Xóa hẳn một đánh giá (không khôi phục được). */
@@ -149,9 +149,10 @@ export async function deleteReview(formData: FormData) {
   const id = readId(formData);
   const db = getSupabase();
   if (!db) redirect("/admin/phan-hoi?msg=error");
-  const { error } = await db.from("reviews").delete().eq("id", id);
+  const { error } = await db.from("product_reviews").delete().eq("id", id);
   revalidatePath("/admin/phan-hoi");
-  revalidatePath("/danh-gia");
+  invalidateCatalog();
+  revalidatePath("/shopping");
   redirect(`/admin/phan-hoi?msg=${error ? "error" : "deleted"}`);
 }
 

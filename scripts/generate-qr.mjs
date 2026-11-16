@@ -1,6 +1,7 @@
 // Tạo mã QR.
 //   npm run qr                 → QR đặt lịch cho khách (dùng SITE_URL)
 //   npm run qr:admin           → QR vào trang quản lý (dùng SITE_URL)
+//   npm run qr:shop            → QR vào trang mua hàng /shopping (dùng SITE_URL)
 //   thêm --local               → trỏ về máy đang chạy dev (địa chỉ Wi-Fi:3001), để thử trên điện thoại
 import QRCode from "qrcode";
 import { mkdirSync, readFileSync, existsSync } from "node:fs";
@@ -8,6 +9,7 @@ import { networkInterfaces } from "node:os";
 
 const args = new Set(process.argv.slice(2));
 const isAdmin = args.has("--admin");
+const isShop = args.has("--shop");
 const isLocal = args.has("--local");
 const LOCAL_PORT = 3001;
 
@@ -48,9 +50,9 @@ if (isLocal) {
   }
 }
 
-const path = isAdmin ? "/admin" : "/dat-lich?src=qr";
+const path = isAdmin ? "/admin" : isShop ? "/shopping?src=qr" : "/dat-lich?src=qr";
 const url = `${site.replace(/\/+$/, "")}${path}`;
-const name = `${isAdmin ? "admin" : "dat-lich"}${isLocal ? "-local" : ""}`;
+const name = `${isAdmin ? "admin" : isShop ? "shopping" : "dat-lich"}${isLocal ? "-local" : ""}`;
 
 const opts = {
   errorCorrectionLevel: "M",

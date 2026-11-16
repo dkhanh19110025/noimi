@@ -49,10 +49,11 @@ export default function BookingWizard() {
   const [slotsError, setSlotsError] = useState("");
   const [notice, setNotice] = useState("");
 
-  /* ── tải giờ trống từ server mỗi khi vào bước 3 ── */
+  /* ── tải giờ trống ngay khi đã chọn combo + ngày (bước 2), tới bước 3 là có sẵn ── */
   const comboId = data.combo?.id;
+  const wantSlots = step === 2 || step === 3;
   useEffect(() => {
-    if (step !== 3 || !comboId || !data.date) return;
+    if (!wantSlots || !comboId || !data.date) return;
     const ctrl = new AbortController();
     setSlotsStatus("loading");
     setSlotsError("");
@@ -72,7 +73,7 @@ export default function BookingWizard() {
         setSlotsStatus("error");
       });
     return () => ctrl.abort();
-  }, [step, comboId, data.date]);
+  }, [wantSlots, comboId, data.date]);
 
   /* ── helpers ── */
   const goNext = () => {

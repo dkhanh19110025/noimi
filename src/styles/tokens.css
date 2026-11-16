@@ -22,9 +22,9 @@
   --accent: #c0453a;
 
   /* Font */
-  --font-body: "Patrick Hand", "Itim", "Comic Sans MS", cursive, sans-serif;
-  --font-display: "Itim", "Patrick Hand", cursive, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-body: var(--nf-body), "Patrick Hand", "Itim", "Comic Sans MS", cursive, sans-serif;
+  --font-display: var(--nf-display), "Itim", "Patrick Hand", cursive, sans-serif;
+  --font-mono: var(--nf-mono), "JetBrains Mono", ui-monospace, monospace;
 
   /* Hình khối */
   --border: 2px solid var(--ink);

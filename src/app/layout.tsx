@@ -1,10 +1,18 @@
 import type { Metadata, Viewport } from "next";
+import { Itim, JetBrains_Mono, Patrick_Hand } from "next/font/google";
 import SiteHeader from "@/components/SiteHeader";
 import ZaloFloat from "@/components/ZaloFloat";
+import CartFloat from "@/components/shop/CartFloat";
+import { ShopProvider } from "@/components/shop/ShopProvider";
 import { shop } from "@/data/shop";
 import "@/styles/tokens.css";
 import "@/styles/base.css";
 import "@/styles/components.css";
+
+// Font tự host cùng tên miền (không kết nối tới Google khi khách quét QR), có đủ tiếng Việt.
+const body = Patrick_Hand({ weight: "400", subsets: ["latin", "vietnamese"], display: "swap", variable: "--nf-body" });
+const display = Itim({ weight: "400", subsets: ["latin", "vietnamese"], display: "swap", variable: "--nf-display" });
+const mono = JetBrains_Mono({ weight: ["400", "600"], subsets: ["latin"], display: "swap", variable: "--nf-mono" });
 
 export const metadata: Metadata = {
   title: "Linh Hue Facial & Lash",
@@ -16,24 +24,20 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+// Layout không đọc cookie → các trang khách được lưu sẵn trên CDN, quét QR là mở gần như tức thì.
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="vi">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Itim&family=JetBrains+Mono:wght@400;600&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html lang="vi" className={`${body.variable} ${display.variable} ${mono.variable}`}>
       <body>
-        <SiteHeader />
-        {children}
-        <footer className="container">
-          <p className="footer-line">{shop.name}</p>
-        </footer>
-        <ZaloFloat />
+        <ShopProvider>
+          <SiteHeader />
+          {children}
+          <footer className="container">
+            <p className="footer-line">{shop.name}</p>
+          </footer>
+          <CartFloat />
+          <ZaloFloat />
+        </ShopProvider>
       </body>
     </html>
   );

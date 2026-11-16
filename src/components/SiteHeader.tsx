@@ -4,10 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { navItems, shop } from "@/data/shop";
+import { useShop } from "@/components/shop/ShopProvider";
 
 export default function SiteHeader() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const { user, displayName, favs } = useShop();
 
   // Trang quản lý có thanh riêng, không hiện menu của khách
   if (pathname.startsWith("/admin")) return null;
@@ -41,6 +43,26 @@ export default function SiteHeader() {
                 onClick={() => setOpen(false)}
               >
                 <span aria-hidden="true">{item.icon}</span> {item.label}
+              </Link>
+            );
+          })}
+          {[
+            { href: "/yeu-thich", icon: "❤️", label: "Yêu thích", count: favs.length },
+            user || displayName
+              ? { href: "/ho-so", icon: "👤", label: (user?.name ?? displayName ?? "").split(" ").pop() || "Hồ sơ", count: 0 }
+              : { href: "/dang-nhap", icon: "👤", label: "Đăng nhập", count: 0 },
+          ].map((item) => {
+            const active = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`nav__link${active ? " nav__link--active" : ""}`}
+                aria-current={active ? "page" : undefined}
+                onClick={() => setOpen(false)}
+              >
+                <span aria-hidden="true">{item.icon}</span> {item.label}
+                {item.count > 0 && <span className="nav__badge" aria-label={`${item.count} món`}>{item.count}</span>}
               </Link>
             );
           })}

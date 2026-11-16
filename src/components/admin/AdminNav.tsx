@@ -3,38 +3,41 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
-/** Menu thanh quản lý: ba nút cùng cỡ, trang đang mở được tô vàng. */
+const ITEMS = [
+  { href: "/admin", icon: "📅", label: "Lịch", exact: true },
+  { href: "/admin/san-pham", icon: "🛍️", label: "Sản phẩm" },
+  { href: "/admin/don-hang", icon: "📦", label: "Đơn hàng" },
+  { href: "/admin/tai-khoan", icon: "👥", label: "Tài khoản" },
+  { href: "/admin/phan-hoi", icon: "💬", label: "Phản hồi" },
+  { href: "/admin/mat-khau", icon: "🔒", label: "Mật khẩu" },
+] as const;
+
+/**
+ * Menu thanh quản lý. Điện thoại: lưới 4 cột, mỗi ô biểu tượng + chữ (không ẩn chữ, không phải đoán nút).
+ * Máy tính: một hàng nút. Trang đang mở được tô vàng.
+ */
 export default function AdminNav() {
   const pathname = usePathname();
   const router = useRouter();
-  const onPassword = pathname.startsWith("/admin/mat-khau");
-  const onFeedback = pathname.startsWith("/admin/phan-hoi");
-  const onSchedule = !onPassword && !onFeedback;
+  // "Lịch" gồm cả các trang con của lịch (lich, lich-su, lich-nghi, lich/[id])
+  const section = ITEMS.filter((i) => !("exact" in i)).find((i) => pathname.startsWith(i.href))?.href ?? "/admin";
 
   return (
     <nav className="admin-bar__nav" aria-label="Menu quản lý">
-      <Link
-        href="/admin"
-        className={`admin-bar__link${onSchedule ? " is-active" : ""}`}
-        aria-current={onSchedule ? "page" : undefined}
-      >
-        📅<span>Lịch</span>
-      </Link>
-      <Link
-        href="/admin/phan-hoi"
-        className={`admin-bar__link${onFeedback ? " is-active" : ""}`}
-        aria-current={onFeedback ? "page" : undefined}
-      >
-        💬<span className="admin-bar__label">Phản hồi</span>
-      </Link>
-      <Link
-        href="/admin/mat-khau"
-        className={`admin-bar__link${onPassword ? " is-active" : ""}`}
-        aria-label="Đổi mật khẩu"
-        aria-current={onPassword ? "page" : undefined}
-      >
-        🔒<span className="admin-bar__label">Mật khẩu</span>
-      </Link>
+      {ITEMS.map((item) => {
+        const active = section === item.href;
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={`admin-bar__link${active ? " is-active" : ""}`}
+            aria-current={active ? "page" : undefined}
+          >
+            <span className="admin-bar__icon" aria-hidden="true">{item.icon}</span>
+            <span className="admin-bar__text">{item.label}</span>
+          </Link>
+        );
+      })}
       <button
         type="button"
         className="admin-bar__link"
@@ -44,7 +47,8 @@ export default function AdminNav() {
           router.refresh();
         }}
       >
-        ↩<span>Thoát</span>
+        <span className="admin-bar__icon" aria-hidden="true">↩</span>
+        <span className="admin-bar__text">Thoát</span>
       </button>
     </nav>
   );

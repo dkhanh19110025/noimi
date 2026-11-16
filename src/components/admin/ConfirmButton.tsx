@@ -11,10 +11,14 @@ export default function ConfirmButton({
   message,
   title = "⚠️ Xóa hẳn lịch này?",
   className,
+  confirmLabel = "🗑️ Xóa hẳn",
+  cancelLabel = "Không xóa",
   children,
 }: {
   message: string;
   title?: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
   className?: string;
   children: ReactNode;
 }) {
@@ -55,11 +59,11 @@ export default function ConfirmButton({
                 className="btn btn--white interactive"
                 onClick={() => setOpen(false)}
               >
-                Không xóa
+                {cancelLabel}
               </button>
               {/* type=submit nằm trong <form> của trang → gửi lệnh xóa */}
               <button type="submit" className="btn btn--pink interactive">
-                🗑️ Xóa hẳn
+                {confirmLabel}
               </button>
             </div>
           </div>

@@ -1,36 +1,43 @@
-import { formatPrice } from "@/data/combos";
+import ProductCard from "@/components/shop/ProductCard";
+import type { Product } from "@/components/shop/ShopProvider";
+import { getCatalog } from "@/lib/catalog";
+import { shop } from "@/data/shop";
 
-const products = [
-  { id: "keo", name: "Keo nối mi", desc: "Khô nhanh, ít kích ứng, giữ mi lâu.", price: 90000, icon: "🧴", color: "blue" },
-  { id: "serum", name: "Serum dưỡng mi", desc: "Dưỡng mi tự nhiên, giúp mi chắc khỏe.", price: 120000, icon: "💧", color: "green" },
-  { id: "chai", name: "Chổi chải mi", desc: "Chải mi mỗi ngày cho mi luôn vào nếp.", price: 30000, icon: "🪮", color: "pink" },
-  { id: "tay-trang", name: "Nước tẩy trang mắt", desc: "Dịu nhẹ, không dầu, an toàn cho mi nối.", price: 110000, icon: "🫧", color: "yellow" },
-] as const;
+// Lưu sẵn trên CDN, làm mới tối đa 60 giây/lần và ngay khi có đơn/hủy đơn/admin sửa (invalidateCatalog).
+export const revalidate = 60;
 
-export default function ShoppingPage() {
+export default async function ShoppingPage() {
+  let products: Product[] = [];
+  let failed = false;
+  try {
+    const list = await getCatalog();
+    if (list === null) failed = true;
+    else products = list;
+  } catch {
+    failed = true;
+  }
+
   return (
     <main className="container section">
       <span className="badge-tilt">Shopping</span>
-      <h1 style={{ marginTop: 24 }}>Đồ chăm mi</h1>
-      <p className="subtitle">— giữ mi đẹp lâu hơn</p>
+      <h1 style={{ marginTop: 24 }}>Đồ chăm mi & da</h1>
+      <p className="subtitle">— giữ vẻ đẹp lâu hơn</p>
       <p className="muted" style={{ marginTop: 12 }}>
-        Mua tại tiệm — xem giá — hỏi <span className="hl">Linh Hue Facial & Lash</span> qua Zalo.
+        Thêm vào giỏ, đặt hàng, nhận và thanh toán tại <span className="hl">{shop.name}</span>.
       </p>
+
+      {failed && (
+        <div className="callout callout--error" style={{ marginTop: 24 }}>
+          ⚠️ Chưa tải được sản phẩm. Vui lòng thử lại sau.
+        </div>
+      )}
+      {!failed && products.length === 0 && (
+        <div className="callout" style={{ marginTop: 24 }}>🛍️ Hiện chưa có sản phẩm nào.</div>
+      )}
 
       <ul className="combo-grid" style={{ listStyle: "none", padding: 0 }}>
         {products.map((p) => (
-          <li key={p.id} className="card combo-card interactive">
-            <div className="combo-card__img product-tile" style={{ background: `var(--${p.color})` }}>
-              <span aria-hidden="true">{p.icon}</span>
-            </div>
-            <div className="combo-card__body">
-              <h2 className="combo-card__name">{p.name}</h2>
-              <p className="combo-card__desc">{p.desc}</p>
-              <div className="combo-card__meta">
-                <span className="pill pill--yellow">💰 {formatPrice(p.price)}</span>
-              </div>
-            </div>
-          </li>
+          <ProductCard key={p.id} p={p} />
         ))}
       </ul>
     </main>

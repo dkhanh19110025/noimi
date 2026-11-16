@@ -31,6 +31,9 @@ async function verifyHash(password: string, stored: string): Promise<boolean> {
   return actual.length === expected.length && timingSafeEqual(actual, expected);
 }
 
+/** Kiểm tra mật khẩu với chuỗi băm đã lưu (dùng cho tài khoản khách). */
+export const verifyPassword = verifyHash;
+
 /** So sánh thời gian cố định (băm trước để hai chuỗi luôn cùng độ dài). */
 function safeEqual(a: string, b: string): boolean {
   const ha = createHash("sha256").update(a).digest();
