@@ -6,8 +6,8 @@ export const shop = {
   lng: 106.6463,
   googleMapsUrl: "https://www.google.com/maps/search/?api=1&query=10.84331,106.6463",
   /** Số Zalo của tiệm (dùng cho deep link) */
-  zaloPhone: "0901234567",
-  phone: "0901234567",
+  zaloPhone: "0865536573",
+  phone: "0865536573",
 };
 
 export const navItems = [

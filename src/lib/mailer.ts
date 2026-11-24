@@ -51,12 +51,17 @@ ${order.note ? `<p>Ghi chú: ${esc(order.note)}</p>` : ""}
 <p style="color:#666">${esc(shop.name)} · ${esc(shop.address)}</p></div>`;
 
   try {
-    await getTransport(user, pass).sendMail({
+    const info = await getTransport(user, pass).sendMail({
       from: `"${shop.name}" <${user}>`,
       to: order.customer_email,
       subject: `${title} ${order.code} · ${shop.name}`,
       html,
     });
+    if (info.rejected.length > 0) {
+      console.error(`[mail] Gmail từ chối địa chỉ nhận của đơn ${order.code} (${kind})`);
+      return false;
+    }
+    console.log(`[mail] đã gửi (${kind}) cho đơn ${order.code}`);
     return true;
   } catch (err) {
     console.error("[mail]", (err as Error).message);

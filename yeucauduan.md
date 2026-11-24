@@ -14,6 +14,7 @@ Tiệm nối mi nhỏ, có **một chủ tiệm là admin duy nhất**. Khách q
 Mục tiêu: đơn giản, chạy ổn trên điện thoại, không bao giờ để hai khách trùng một khung giờ.
 
 ### Ngoài phạm vi bản đầu (KHÔNG làm)
+
 - Mail hoặc Zalo nhắc hẹn tự động, không cron job.
 - Đặt cọc, thanh toán online.
 - Thống kê doanh thu, báo cáo.
@@ -25,21 +26,22 @@ Mục tiêu: đơn giản, chạy ổn trên điện thoại, không bao giờ �
 
 ## 2. Công nghệ
 
-| Phần | Công nghệ |
-|---|---|
-| Framework | Next.js (App Router) + TypeScript |
-| Giao diện | Tailwind CSS |
-| Database | Supabase (Postgres) |
-| Lưu ảnh combo | Supabase Storage (bucket public chỉ đọc) |
-| Gửi mail | Resend (SDK `resend`) |
-| Chống spam | Cloudflare Turnstile |
-| Kiểm tra dữ liệu | `zod` |
-| Phiên admin | `jose` (JWT ký, cookie httpOnly) |
-| Tạo QR | `qrcode` (script chạy riêng) |
-| Test | `vitest` |
-| Deploy | Vercel |
+| Phần             | Công nghệ                                |
+| ---------------- | ---------------------------------------- |
+| Framework        | Next.js (App Router) + TypeScript        |
+| Giao diện        | Tailwind CSS                             |
+| Database         | Supabase (Postgres)                      |
+| Lưu ảnh combo    | Supabase Storage (bucket public chỉ đọc) |
+| Gửi mail         | Resend (SDK `resend`)                    |
+| Chống spam       | Cloudflare Turnstile                     |
+| Kiểm tra dữ liệu | `zod`                                    |
+| Phiên admin      | `jose` (JWT ký, cookie httpOnly)         |
+| Tạo QR           | `qrcode` (script chạy riêng)             |
+| Test             | `vitest`                                 |
+| Deploy           | Vercel                                   |
 
 Quy tắc kiến trúc:
+
 - **Mọi truy cập database đi qua server** (Route Handlers / Server Actions) bằng Supabase **service role key**. Trình duyệt không bao giờ gọi Supabase trực tiếp.
 - Bật **Row Level Security (RLS)** trên mọi bảng và **không tạo policy nào cho `anon`/`authenticated`**. Như vậy dù lộ anon key, không ai đọc được dữ liệu khách.
 - Service role key và mọi secret chỉ nằm ở biến môi trường phía server, không đưa vào code client, không có tiền tố `NEXT_PUBLIC_`.
@@ -147,6 +149,7 @@ alter table admin_login_attempts enable row level security;
 ```
 
 Hàm tạo lịch dùng chung (`create_booking`, viết bằng plpgsql, chạy trong **một transaction**):
+
 1. Kiểm tra khung giờ không chồng với `time_blocks`.
 2. Insert vào `bookings`. Nếu vi phạm `bookings_no_overlap` thì trả lỗi `SLOT_TAKEN` để API báo "Giờ này vừa có người đặt, vui lòng chọn giờ khác".
 3. Trả về lịch vừa tạo.
@@ -154,22 +157,23 @@ Hàm tạo lịch dùng chung (`create_booking`, viết bằng plpgsql, chạy t
 Cả đặt từ web lẫn admin tạo hộ đều gọi hàm này.
 
 ### Seed mặc định (`supabase/seed.sql`)
+
 - `working_hours`: cả 7 ngày (gồm Thứ 7 và Chủ nhật) mở `09:00`–`19:00`.
 - `settings` (có thể sửa trong trang admin):
 
-| key | mặc định | ý nghĩa |
-|---|---|---|
-| `slot_step_minutes` | `30` | Khoảng cách giữa các giờ bắt đầu hiển thị |
-| `buffer_minutes` | `0` | Khoảng nghỉ giữa hai khách |
-| `min_lead_hours` | `2` | Khách phải đặt trước ít nhất bao nhiêu giờ |
-| `max_advance_days` | `30` | Khách chỉ đặt trước tối đa bao nhiêu ngày |
-| `cancel_before_hours` | `2` | Khách chỉ hủy/đổi được nếu còn ít nhất bấy nhiêu giờ |
-| `max_pending_per_phone` | `2` | Số lịch sắp tới tối đa của một số điện thoại |
-| `shop_name` | `"Tên tiệm"` | |
-| `shop_address` | `"Địa chỉ tiệm"` | |
-| `maps_url` | `""` | Link Google Maps |
-| `zalo_phone` | `""` | SĐT Zalo của tiệm |
-| `admin_email` | `""` | Email nhận thông báo (có thể thay bằng biến môi trường) |
+| key                     | mặc định         | ý nghĩa                                                 |
+| ----------------------- | ---------------- | ------------------------------------------------------- |
+| `slot_step_minutes`     | `30`             | Khoảng cách giữa các giờ bắt đầu hiển thị               |
+| `buffer_minutes`        | `0`              | Khoảng nghỉ giữa hai khách                              |
+| `min_lead_hours`        | `2`              | Khách phải đặt trước ít nhất bao nhiêu giờ              |
+| `max_advance_days`      | `30`             | Khách chỉ đặt trước tối đa bao nhiêu ngày               |
+| `cancel_before_hours`   | `2`              | Khách chỉ hủy/đổi được nếu còn ít nhất bấy nhiêu giờ    |
+| `max_pending_per_phone` | `2`              | Số lịch sắp tới tối đa của một số điện thoại            |
+| `shop_name`             | `"Tên tiệm"`     |                                                         |
+| `shop_address`          | `"Địa chỉ tiệm"` |                                                         |
+| `maps_url`              | `""`             | Link Google Maps                                        |
+| `zalo_phone`            | `""`             | SĐT Zalo của tiệm                                       |
+| `admin_email`           | `""`             | Email nhận thông báo (có thể thay bằng biến môi trường) |
 
 - 3 combo mẫu (giá và thời lượng giả, chủ tiệm sẽ sửa trong trang admin).
 
@@ -178,9 +182,11 @@ Cả đặt từ web lẫn admin tạo hộ đều gọi hàm này.
 ## 5. Quy tắc nghiệp vụ
 
 ### 5.1. Tính giờ trống (hàm thuần, có unit test)
+
 Đặt trong `src/lib/availability.ts`. Đầu vào: ngày, combo, danh sách lịch đang hiệu lực, `time_blocks`, `working_hours`, `settings`, thời điểm hiện tại. Đầu ra: danh sách giờ bắt đầu hợp lệ.
 
 Một giờ bắt đầu `S` của ngày `D` hợp lệ khi **tất cả** điều kiện sau đúng:
+
 1. Thứ của `D` có `is_open = true`.
 2. `S` nằm trong `[open_time, close_time]` và kết thúc dịch vụ `S + duration` **không vượt quá** `close_time`.
 3. `S` là bội số của `slot_step_minutes` tính từ `open_time`.
@@ -191,6 +197,7 @@ Một giờ bắt đầu `S` của ngày `D` hợp lệ khi **tất cả** đi�
 Lịch có trạng thái `cancelled` và `no_show` **không** chiếm giờ.
 
 ### 5.2. Đặt lịch (khách)
+
 - Kiểm tra bằng `zod` ở server: combo tồn tại và đang bật, tên (1–100 ký tự), SĐT hợp lệ, email hợp lệ nếu có, ghi chú tối đa 500 ký tự.
 - **Tính lại điều kiện 5.1 ở server ngay lúc đặt**, không tin giờ gửi lên từ trình duyệt.
 - Xác minh token Cloudflare Turnstile ở server.
@@ -200,12 +207,14 @@ Lịch có trạng thái `cancelled` và `no_show` **không** chiếm giờ.
 - Sau khi lưu: gửi mail (mục 7). **Gửi mail lỗi thì không được làm hỏng việc đặt lịch**, chỉ ghi log.
 
 ### 5.3. Hủy / đổi lịch (khách, qua link trong mail)
+
 - Link dạng `/lich/{manage_token}`, không cần đăng nhập. Trang chỉ hiện thông tin của đúng lịch đó.
 - Hủy: được phép nếu còn ít nhất `cancel_before_hours` trước giờ hẹn, đặt `status = 'cancelled'`. Quá hạn thì hiện thông báo và nút nhắn Zalo cho tiệm.
 - Đổi: chọn giờ mới (cùng combo) theo đúng quy tắc 5.1, cập nhật `starts_at/ends_at/busy_until`. Cùng điều kiện thời hạn như hủy.
 - Hủy hoặc đổi xong thì gửi mail báo admin.
 
 ### 5.4. Admin tự đặt lịch hộ khách
+
 - Dùng khi khách gọi điện, nhắn Zalo hoặc đến trực tiếp.
 - Nhập: tên, SĐT, combo, ngày giờ, nguồn (`zalo` / `phone` / `walk_in`), ghi chú.
 - **Bỏ qua** giới hạn đặt trước tối thiểu/tối đa, giới hạn số lịch mỗi SĐT và Turnstile. Admin được đặt cả khung giờ ngoài giờ mở cửa sau khi xác nhận cảnh báo.
@@ -214,9 +223,11 @@ Lịch có trạng thái `cancelled` và `no_show` **không** chiếm giờ.
 - Bấm vào ô giờ trống trên lịch cũng mở form này với giờ đã điền sẵn.
 
 ### 5.5. Quản lý trạng thái
+
 Trạng thái: `confirmed` (đã xác nhận) → `arrived` (đã đến) / `cancelled` (hủy) / `no_show` (không đến). Admin đổi được tự do giữa các trạng thái. Đổi sang `confirmed` hoặc `arrived` phải kiểm tra lại trùng giờ (có thể bị DB từ chối).
 
 ### 5.6. Combo
+
 - Thêm, sửa tên/mô tả/giá/thời lượng/ảnh, bật hoặc tắt.
 - **Không xóa cứng** combo đã có lịch, chỉ tắt (`is_active = false`).
 - Sửa giá hoặc thời lượng không ảnh hưởng lịch cũ (lịch đã chụp lại `combo_name`, `price`, và `ends_at`).
@@ -227,14 +238,16 @@ Trạng thái: `confirmed` (đã xác nhận) → `arrived` (đã đến) / `can
 ## 6. Trang và API
 
 ### 6.1. Trang cho khách
-| Đường dẫn | Chức năng |
-|---|---|
-| `/` | Chuyển hướng sang `/dat-lich` |
-| `/dat-lich` | Trang đặt lịch (mã QR trỏ về đây). Gồm 4 bước: chọn combo → chọn ngày → chọn giờ → nhập thông tin |
-| `/dat-lich/xac-nhan/{manage_token}` | Xác nhận: tóm tắt lịch, địa chỉ, link Google Maps, nút nhắn Zalo cho tiệm, link quản lý lịch |
-| `/lich/{manage_token}` | Xem, hủy hoặc đổi lịch |
+
+| Đường dẫn                           | Chức năng                                                                                         |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `/`                                 | Chuyển hướng sang `/dat-lich`                                                                     |
+| `/dat-lich`                         | Trang đặt lịch (mã QR trỏ về đây). Gồm 4 bước: chọn combo → chọn ngày → chọn giờ → nhập thông tin |
+| `/dat-lich/xac-nhan/{manage_token}` | Xác nhận: tóm tắt lịch, địa chỉ, link Google Maps, nút nhắn Zalo cho tiệm, link quản lý lịch      |
+| `/lich/{manage_token}`              | Xem, hủy hoặc đổi lịch                                                                            |
 
 Chi tiết trang đặt lịch:
+
 - Bước chọn ngày hiển thị lịch tháng. Ngày nghỉ, ngày đã qua và ngày không còn giờ trống bị **khóa** (lấy từ `/api/availability/days`).
 - Bước chọn giờ chỉ hiện giờ còn trống của ngày đã chọn. Nếu hết giờ thì báo và gợi ý chọn ngày khác.
 - Nút Zalo: `https://zalo.me/{zalo_phone}`.
@@ -242,21 +255,24 @@ Chi tiết trang đặt lịch:
 - Lỗi `SLOT_TAKEN`: quay lại bước chọn giờ, tải lại danh sách giờ, hiện thông báo thân thiện.
 
 ### 6.2. Trang cho admin (một mật khẩu)
-| Đường dẫn | Chức năng |
-|---|---|
-| `/admin/login` | Nhập mật khẩu |
-| `/admin` | Lịch theo **ngày** (mặc định hôm nay), chuyển ngày trước/sau, nút "+ Thêm lịch" |
-| `/admin/tuan` | Lịch theo **tuần** |
+
+| Đường dẫn          | Chức năng                                                                          |
+| ------------------ | ---------------------------------------------------------------------------------- |
+| `/admin/login`     | Nhập mật khẩu                                                                      |
+| `/admin`           | Lịch theo **ngày** (mặc định hôm nay), chuyển ngày trước/sau, nút "+ Thêm lịch"    |
+| `/admin/tuan`      | Lịch theo **tuần**                                                                 |
 | `/admin/lich/{id}` | Chi tiết một lịch: đổi trạng thái, hủy, sửa ghi chú, bấm SĐT để gọi hoặc nhắn Zalo |
-| `/admin/combo` | Danh sách và sửa combo |
-| `/admin/cai-dat` | Giờ mở cửa theo thứ, chặn giờ / ngày nghỉ, các cài đặt chung ở mục 4 |
+| `/admin/combo`     | Danh sách và sửa combo                                                             |
+| `/admin/cai-dat`   | Giờ mở cửa theo thứ, chặn giờ / ngày nghỉ, các cài đặt chung ở mục 4               |
 
 - Trên điện thoại, lịch ngày hiển thị dạng **danh sách theo giờ**, mỗi dòng gồm giờ, tên, combo, trạng thái và các giờ trống có thể bấm để tạo lịch nhanh.
 - SĐT là liên kết: `tel:` để gọi, kèm nút `https://zalo.me/{sdt}`.
 - Có thể thêm `manifest.webmanifest` để admin "Thêm vào màn hình chính" như một app.
 
 ### 6.3. API (Route Handlers)
+
 Công khai (cần Turnstile ở chỗ có ghi chú):
+
 - `GET /api/combos` → combo đang bật.
 - `GET /api/availability/days?month=YYYY-MM&combo_id=` → danh sách ngày còn ít nhất một giờ trống.
 - `GET /api/availability?date=YYYY-MM-DD&combo_id=` → danh sách giờ bắt đầu còn trống.
@@ -266,6 +282,7 @@ Công khai (cần Turnstile ở chỗ có ghi chú):
 - `POST /api/bookings/by-token/{token}/reschedule`
 
 Admin (bắt buộc cookie phiên hợp lệ, trả 401 nếu thiếu):
+
 - `POST /api/admin/login`, `POST /api/admin/logout`
 - `GET /api/admin/bookings?from=&to=`
 - `POST /api/admin/bookings` (tạo hộ khách)
@@ -283,14 +300,15 @@ Mọi API trả lỗi dạng `{ "error": { "code": "...", "message": "tiếng Vi
 
 Đặt trong `src/lib/email.ts`, nội dung HTML đơn giản và đọc tốt trên điện thoại.
 
-| Khi nào | Gửi cho | Nội dung chính |
-|---|---|---|
-| Khách đặt lịch qua web | Admin (`ADMIN_EMAIL`) | Tên, SĐT, email, combo, giờ, ghi chú, link tới `/admin` đúng ngày đó. Tiêu đề: `Lịch mới: {tên} – {combo} – {dd/MM HH:mm}` |
-| Khách đặt lịch có nhập email | Khách | Tóm tắt lịch, địa chỉ, link Google Maps, link hủy/đổi lịch |
-| Khách hủy hoặc đổi lịch | Admin | Lịch cũ và lịch mới (nếu đổi) |
-| Admin tạo lịch hộ, khách có email | Khách | Giống mail xác nhận |
+| Khi nào                           | Gửi cho               | Nội dung chính                                                                                                             |
+| --------------------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Khách đặt lịch qua web            | Admin (`ADMIN_EMAIL`) | Tên, SĐT, email, combo, giờ, ghi chú, link tới `/admin` đúng ngày đó. Tiêu đề: `Lịch mới: {tên} – {combo} – {dd/MM HH:mm}` |
+| Khách đặt lịch có nhập email      | Khách                 | Tóm tắt lịch, địa chỉ, link Google Maps, link hủy/đổi lịch                                                                 |
+| Khách hủy hoặc đổi lịch           | Admin                 | Lịch cũ và lịch mới (nếu đổi)                                                                                              |
+| Admin tạo lịch hộ, khách có email | Khách                 | Giống mail xác nhận                                                                                                        |
 
 Ghi chú triển khai:
+
 - Resend gói miễn phí chỉ gửi tới email của chính chủ tài khoản nếu chưa xác minh tên miền. Muốn gửi tới email khách bất kỳ phải gắn tên miền riêng của tiệm trong Resend. Trong lúc phát triển có thể chỉ test mail cho admin.
 - Hàm gửi mail phải `try/catch`, lỗi chỉ ghi log, không làm hỏng luồng đặt lịch.
 - Không đưa thông tin nhạy cảm ngoài những gì cần thiết vào mail cho khách.
@@ -300,6 +318,7 @@ Ghi chú triển khai:
 ## 8. Bảo mật
 
 ### 8.1. Đăng nhập admin (một mật khẩu)
+
 - Mật khẩu lấy từ biến môi trường `ADMIN_PASSWORD`. **Không bao giờ viết cứng mật khẩu trong code hay commit lên Git.**
 - So sánh bằng hàm so sánh thời gian cố định (`crypto.timingSafeEqual`).
 - Đúng mật khẩu thì tạo JWT (thư viện `jose`, khóa `ADMIN_SESSION_SECRET`, hạn 30 ngày) đặt trong cookie `httpOnly`, `secure`, `sameSite=lax`.
@@ -308,6 +327,7 @@ Ghi chú triển khai:
 - Thêm header `X-Robots-Tag: noindex` và `robots.txt` chặn `/admin`.
 
 ### 8.2. Khác
+
 - Các route công khai không bao giờ trả danh sách lịch hay thông tin cá nhân của người khác.
 - `manage_token` đủ dài, ngẫu nhiên, không đoán được. Trang `/lich/{token}` sai token trả 404.
 - Turnstile bắt buộc ở `POST /api/bookings`.
@@ -416,6 +436,7 @@ README.md
 ## 14. Kiểm thử và tiêu chí nghiệm thu
 
 ### Unit test (`vitest`) cho `availability.ts`
+
 - Ngày nghỉ không có giờ nào.
 - Combo dài không được kết thúc sau giờ đóng cửa.
 - Lịch đã có chiếm đúng khoảng `[starts_at, busy_until)`.
@@ -426,9 +447,11 @@ README.md
 - Chuyển đổi múi giờ đúng (giờ Việt Nam so với UTC).
 
 ### Kiểm thử đồng thời
+
 - Gửi hai yêu cầu đặt cùng một khung giờ cùng lúc: chỉ một thành công, cái còn lại nhận `SLOT_TAKEN`.
 
 ### Tiêu chí nghiệm thu
+
 - [ ] Quét QR bằng iPhone, Android và Zalo đều mở đúng `/dat-lich`.
 - [ ] Khách đặt được lịch từ đầu đến cuối trên điện thoại, chỉ hiện giờ còn trống.
 - [ ] Không thể đặt trùng giờ, kể cả khi hai người bấm cùng lúc.
