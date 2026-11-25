@@ -5,8 +5,10 @@ export type Combo = {
   /** Câu mở đầu (hiện kèm ✨) */
   tagline: string;
   description: string;
-  /** VND. Hiện chưa chốt giá nên = 0 và KHÔNG hiển thị cho khách; khi có giá chỉ cần điền vào đây. */
+  /** VND. GIÁ TẠM do tạo ngẫu nhiên — chủ tiệm cần sửa lại cho đúng. */
   price: number;
+  /** Combo tiết kiệm: tổng giá khi mua lẻ (để hiện số tiền được bớt) */
+  originalPrice?: number;
   durationMinutes: number;
   imageUrl: string;
   color: "blue" | "pink" | "green";
@@ -18,7 +20,7 @@ export const combos: Combo[] = [
     name: "Uốn mi",
     tagline: "Đẹp và cuốn hút hơn trong từng ánh nhìn.",
     description: "Đánh thức nét dịu dàng với hàng mi cong tự nhiên.",
-    price: 0,
+    price: 150000,
     durationMinutes: 30,
     imageUrl: "/combos/uonmi.webp",
     color: "blue",
@@ -28,7 +30,7 @@ export const combos: Combo[] = [
     name: "Nối mi",
     tagline: "Đẹp và cuốn hút hơn trong từng ánh nhìn.",
     description: "Nâng tầm ánh nhìn, tăng thêm sức hút cho đôi mắt.",
-    price: 0,
+    price: 250000,
     durationMinutes: 30,
     imageUrl: "/combos/noimi.webp",
     color: "pink",
@@ -38,7 +40,41 @@ export const combos: Combo[] = [
     name: "Chăm sóc da",
     tagline: "Làn da khỏe là nền tảng của vẻ đẹp rạng rỡ.",
     description: "Nâng niu làn da, nuôi dưỡng vẻ đẹp tự nhiên từ bên trong.",
-    price: 0,
+    price: 200000,
+    durationMinutes: 30,
+    imageUrl: "/combos/da.webp",
+    color: "green",
+  },
+  // shortcut: sản phẩm tặng kèm không tự trừ kho (chủ tiệm bấm giảm trong admin); bán nhiều thì nối với đơn hàng.
+  {
+    id: "combo-uon-mi-serum",
+    name: "Uốn mi + Serum dưỡng mi",
+    tagline: "Combo tiết kiệm: làm đẹp và dưỡng tại nhà.",
+    description: "Uốn mi kèm 1 serum dưỡng mi nhận tại tiệm.",
+    price: 240000,
+    originalPrice: 270000,
+    durationMinutes: 30,
+    imageUrl: "/combos/uonmi.webp",
+    color: "blue",
+  },
+  {
+    id: "combo-noi-mi-serum",
+    name: "Nối mi + Serum dưỡng mi",
+    tagline: "Combo tiết kiệm: mi đẹp lâu hơn.",
+    description: "Nối mi kèm 1 serum dưỡng mi nhận tại tiệm.",
+    price: 330000,
+    originalPrice: 370000,
+    durationMinutes: 30,
+    imageUrl: "/combos/noimi.webp",
+    color: "pink",
+  },
+  {
+    id: "combo-da-mat-na",
+    name: "Chăm sóc da + Mặt nạ cấp nước",
+    tagline: "Combo tiết kiệm: da căng mịn cả tuần.",
+    description: "Chăm sóc da kèm 1 hộp mặt nạ cấp nước nhận tại tiệm.",
+    price: 315000,
+    originalPrice: 350000,
     durationMinutes: 30,
     imageUrl: "/combos/da.webp",
     color: "green",

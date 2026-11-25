@@ -6,6 +6,7 @@
     "dev": "next dev -H 0.0.0.0 -p 3001",
     "build": "next build",
     "start": "next start -H 0.0.0.0 -p 3001",
+    "test:bot": "node --experimental-strip-types scripts/test-chat-bot.mjs",
     "qr": "node scripts/generate-qr.mjs",
     "qr:admin": "node scripts/generate-qr.mjs --admin",
     "qr:shop": "node scripts/generate-qr.mjs --shop"

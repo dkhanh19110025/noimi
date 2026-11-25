@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { combos, formatDuration, type Combo } from "@/data/combos";
+import { combos, formatDuration, formatPrice, type Combo } from "@/data/combos";
+import { LOYALTY } from "@/lib/discount";
 import {
   isHoliday,
   toDateStr,
@@ -23,7 +24,12 @@ type BookingData = {
   phone: string;
   email: string;
   note: string;
+  coupon: string;
 };
+
+/** Nhớ trên máy khách để lần sau bấm "Đặt lại" */
+const LAST_KEY = "lh_last_booking";
+type Last = { comboId: string; name: string; phone: string; email: string };
 
 const INITIAL: BookingData = {
   combo: null,
@@ -33,6 +39,7 @@ const INITIAL: BookingData = {
   phone: "",
   email: "",
   note: "",
+  coupon: "",
 };
 
 /* ══════════════════════════════════════════════════════════════════ */
@@ -48,6 +55,17 @@ export default function BookingWizard() {
   const [slotsStatus, setSlotsStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
   const [slotsError, setSlotsError] = useState("");
   const [notice, setNotice] = useState("");
+  const [paid, setPaid] = useState<{ price: number; discount: string }>({ price: 0, discount: "" });
+  const [last, setLast] = useState<Last | null>(null);
+
+  useEffect(() => {
+    try {
+      setLast(JSON.parse(localStorage.getItem(LAST_KEY) ?? "null"));
+    } catch {
+      /* trình duyệt chặn lưu trữ */
+    }
+  }, [submitted]);
+  const lastCombo = combos.find((c) => c.id === last?.comboId);
 
   /* ── tải giờ trống ngay khi đã chọn combo + ngày (bước 2), tới bước 3 là có sẵn ── */
   const comboId = data.combo?.id;
@@ -99,6 +117,19 @@ export default function BookingWizard() {
           Chọn <span className="hl">dịch vụ</span> — xem thời gian — đặt lịch.
         </p>
 
+        {last && lastCombo && (
+          <button
+            type="button"
+            className="btn btn--blue interactive rebook"
+            onClick={() => {
+              setData((d) => ({ ...d, combo: lastCombo, time: "", name: last.name, phone: last.phone, email: last.email }));
+              setStep(2);
+            }}
+          >
+            🔁 Đặt lại: {lastCombo.name}
+          </button>
+        )}
+
         <ul className="combo-grid" style={{ listStyle: "none", padding: 0 }}>
           {combos.map((c) => (
             <li
@@ -134,6 +165,10 @@ export default function BookingWizard() {
                 <p className="combo-card__desc">✨ {c.tagline}</p>
                 <p className="combo-card__desc">{c.description}</p>
                 <div className="combo-card__meta">
+                  <span className="pill pill--yellow">💰 {formatPrice(c.price)}</span>
+                  {c.originalPrice && (
+                    <span className="pill pill--pink">Bớt {formatPrice(c.originalPrice - c.price)}</span>
+                  )}
                   <span className="pill pill--green">
                     ⏱ {formatDuration(c.durationMinutes)}
                   </span>
@@ -386,6 +421,7 @@ export default function BookingWizard() {
             phone: data.phone.trim(),
             email: data.email.trim(),
             note: data.note.trim(),
+            coupon: data.coupon.trim(),
           }),
         });
 
@@ -405,6 +441,13 @@ export default function BookingWizard() {
         }
 
         setBookingId(json.bookingId ?? "");
+        setPaid({ price: json.price, discount: json.discount ?? "" });
+        try {
+          const keep: Last = { comboId: data.combo!.id, name: data.name.trim(), phone: data.phone.trim(), email: data.email.trim() };
+          localStorage.setItem(LAST_KEY, JSON.stringify(keep));
+        } catch {
+          /* trình duyệt chặn lưu trữ */
+        }
         setSubmitted(true);
       } catch {
         setServerError("Không kết nối được server. Vui lòng thử lại.");
@@ -482,6 +525,27 @@ export default function BookingWizard() {
             {errors.email && <span className="form-error">{errors.email}</span>}
           </div>
 
+          {/* Mã giảm giá */}
+          <div className="form-group">
+            <div className="float-field">
+              <input
+                id="f-coupon"
+                className="form-input"
+                type="text"
+                placeholder=" "
+                autoCapitalize="characters"
+                autoComplete="off"
+                maxLength={20}
+                value={data.coupon}
+                onChange={(e) => setData((d) => ({ ...d, coupon: e.target.value }))}
+              />
+              <label htmlFor="f-coupon">Mã giảm giá (nếu có)</label>
+            </div>
+            <span className="muted">
+              Đủ {LOYALTY.every} lần làm xong được tự giảm {LOYALTY.percent}% cho lần kế tiếp.
+            </span>
+          </div>
+
           {/* Ghi chú */}
           <div className="form-group">
             <div className="float-field">
@@ -520,6 +584,10 @@ export default function BookingWizard() {
           <div className="summary-row">
             <span>Giờ:</span>
             <strong>{data.time}</strong>
+          </div>
+          <div className="summary-row">
+            <span>Giá (chưa trừ ưu đãi):</span>
+            <strong>{formatPrice(data.combo?.price ?? 0)}</strong>
           </div>
         </div>
 
@@ -588,6 +656,16 @@ export default function BookingWizard() {
               <span>Giờ:</span>
               <strong>{data.time}</strong>
             </div>
+            <div className="summary-row">
+              <span>Trả tại tiệm:</span>
+              <strong>{formatPrice(paid.price)}</strong>
+            </div>
+            {paid.discount && (
+              <div className="summary-row">
+                <span>Ưu đãi:</span>
+                <strong className="hl">{paid.discount}</strong>
+              </div>
+            )}
             <div className="summary-row">
               <span>Khách:</span>
               <strong>{data.name}</strong>

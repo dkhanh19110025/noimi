@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Itim, JetBrains_Mono, Patrick_Hand } from "next/font/google";
+import ChatBot from "@/components/ChatBot";
 import SiteHeader from "@/components/SiteHeader";
 import ZaloFloat from "@/components/ZaloFloat";
 import CartFloat from "@/components/shop/CartFloat";
@@ -37,6 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </footer>
           <CartFloat />
           <ZaloFloat />
+          <ChatBot />
         </ShopProvider>
       </body>
     </html>

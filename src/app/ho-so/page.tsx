@@ -4,6 +4,9 @@ import CancelOrderButton from "@/components/shop/CancelOrderButton";
 import LogoutButton from "@/components/shop/LogoutButton";
 import ReviewOrderForm from "@/components/shop/ReviewOrderForm";
 import FeedbackForm from "@/components/shop/FeedbackForm";
+import ReorderButton from "@/components/shop/ReorderButton";
+import { COUPONS, LOYALTY } from "@/lib/discount";
+import { getHistory } from "@/lib/discount-db";
 import { formatPrice } from "@/data/combos";
 import { getCustomer } from "@/lib/customer";
 import { getSupabase } from "@/lib/supabase-server";
@@ -35,7 +38,9 @@ export default async function ProfilePage() {
   let orders: Order[] = [];
   let failed = !db;
   const reviewed: Record<string, Record<string, number>> = {};
+  let doneBookings: number | null = null;
   if (db) {
+    doneBookings = await getHistory(db, me.phone).then((h) => h.doneBookings).catch(() => null);
     const { data, error } = await db
       .from("shop_orders")
       .select("id, code, total, status, cancelled_by, note, created_at, shop_order_items(product_id, name, qty, price)")
@@ -61,6 +66,22 @@ export default async function ProfilePage() {
       <p className="muted" style={{ marginTop: 8 }}>📞 {me.phone} · ✉️ {me.email}</p>
       <div style={{ marginTop: 16 }}><LogoutButton /></div>
 
+      {doneBookings !== null && (
+        <div className="card" style={{ marginTop: 24 }}>
+          <h2>⭐ Tích điểm</h2>
+          <p style={{ marginTop: 8 }}>
+            Bạn đã làm xong <strong>{doneBookings}</strong> lần.{" "}
+            {doneBookings > 0 && doneBookings % LOYALTY.every === 0
+              ? `Lần đặt lịch kế tiếp được giảm ${LOYALTY.percent}%.`
+              : `Còn ${LOYALTY.every - (doneBookings % LOYALTY.every)} lần nữa để được giảm ${LOYALTY.percent}%.`}
+          </p>
+          <p className="muted" style={{ marginTop: 8 }}>
+            {Object.entries(COUPONS).map(([code, c]) => `${code}: ${c.label} -${c.percent}%`).join(" · ")}
+          </p>
+          <Link href="/dat-lich" className="btn btn--blue interactive" style={{ marginTop: 12 }}>🔁 Đặt lại lịch</Link>
+        </div>
+      )}
+
       <h2 className="reviews-heading">Đơn hàng của tôi ({orders.length})</h2>
       {failed && <div className="callout callout--error">⚠️ Chưa tải được đơn hàng.</div>}
       {!failed && orders.length === 0 && (
@@ -85,6 +106,7 @@ export default async function ProfilePage() {
               </ul>
               {o.note && <p className="muted">Ghi chú: {o.note}</p>}
               <p style={{ marginTop: 8 }}><strong>Tổng: {formatPrice(o.total)}</strong></p>
+              {o.status !== "placed" && <div style={{ marginTop: 12 }}><ReorderButton items={o.shop_order_items} /></div>}
               {o.status === "placed" && <div style={{ marginTop: 12 }}><CancelOrderButton id={o.id} code={o.code} /></div>}
               {o.status === "done" && (
                 <ReviewOrderForm orderId={o.id} items={o.shop_order_items} done={reviewed[o.id] ?? {}} />

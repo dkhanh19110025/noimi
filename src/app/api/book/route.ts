@@ -5,6 +5,8 @@ import { combos } from "@/data/combos";
 import { MAX_PENDING_PER_PHONE, vnIso } from "@/data/booking";
 import { getSupabase } from "@/lib/supabase-server";
 import { getFreeSlots } from "@/lib/availability-db";
+import { applyPercent, pickDiscount } from "@/lib/discount";
+import { getHistory } from "@/lib/discount-db";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +26,7 @@ const bodySchema = z.object({
   phone: z.string().trim().min(1).max(20),
   email: z.string().trim().max(200).optional().default(""),
   note: z.string().trim().max(500).optional().default(""),
+  coupon: z.string().trim().max(20).optional().default(""),
 });
 
 function fail(status: number, code: string, message: string) {
@@ -95,6 +98,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Giảm giá luôn tính ở server từ lịch sử trong database
+    // shortcut: hai lần đặt gửi cùng lúc có thể cùng được giảm; admin thấy ghi chú ưu đãi trên từng lịch.
+    const discount = pickDiscount(body.coupon, await getHistory(db, phone), "booking");
+    if (!discount.ok) return fail(400, "BAD_COUPON", discount.error);
+    const price = applyPercent(combo.price, discount.percent);
+    const label = discount.percent ? `${discount.label} (-${discount.percent}%)` : "";
+
     const startsAt = new Date(vnIso(body.date, body.time));
     const endsAt = new Date(startsAt.getTime() + combo.durationMinutes * 60_000);
     const code = randomBytes(4).toString("hex").toUpperCase();
@@ -103,11 +113,11 @@ export async function POST(req: NextRequest) {
       code,
       combo_id: combo.id,
       combo_name: combo.name,
-      price: combo.price,
+      price,
       customer_name: body.name,
       customer_phone: phone,
       customer_email: body.email || null,
-      note: body.note || null,
+      note: [label && `[${label}]`, body.note].filter(Boolean).join(" ") || null,
       starts_at: startsAt.toISOString(),
       ends_at: endsAt.toISOString(),
       manage_token: randomBytes(24).toString("base64url"),
@@ -127,7 +137,7 @@ export async function POST(req: NextRequest) {
 
     sendConfirmationEmail(code, !!body.email).catch(() => {});
 
-    return NextResponse.json({ ok: true, bookingId: code, message: "Đặt lịch thành công!" });
+    return NextResponse.json({ ok: true, bookingId: code, price, discount: label, message: "Đặt lịch thành công!" });
   } catch (err) {
     console.error("[POST /api/book]", (err as Error).message);
     return fail(500, "SERVER_ERROR", "Lỗi hệ thống. Vui lòng thử lại.");

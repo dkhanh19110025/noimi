@@ -7,6 +7,7 @@ const ITEMS = [
   { href: "/admin", icon: "📅", label: "Lịch", exact: true },
   { href: "/admin/san-pham", icon: "🛍️", label: "Sản phẩm" },
   { href: "/admin/don-hang", icon: "📦", label: "Đơn hàng" },
+  { href: "/admin/thong-ke", icon: "📊", label: "Thống kê" },
   { href: "/admin/tai-khoan", icon: "👥", label: "Tài khoản" },
   { href: "/admin/phan-hoi", icon: "💬", label: "Phản hồi" },
   { href: "/admin/mat-khau", icon: "🔒", label: "Mật khẩu" },

@@ -1,4 +1,4 @@
-import ProductCard from "@/components/shop/ProductCard";
+import ShopBrowser from "@/components/shop/ShopBrowser";
 import type { Product } from "@/components/shop/ShopProvider";
 import { getCatalog } from "@/lib/catalog";
 import { shop } from "@/data/shop";
@@ -35,11 +35,7 @@ export default async function ShoppingPage() {
         <div className="callout" style={{ marginTop: 24 }}>🛍️ Hiện chưa có sản phẩm nào.</div>
       )}
 
-      <ul className="combo-grid" style={{ listStyle: "none", padding: 0 }}>
-        {products.map((p) => (
-          <ProductCard key={p.id} p={p} />
-        ))}
-      </ul>
+      {products.length > 0 && <ShopBrowser products={products} />}
     </main>
   );
 }
