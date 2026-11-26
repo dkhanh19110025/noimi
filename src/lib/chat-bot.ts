@@ -171,11 +171,11 @@ export function reply(message: string, ctx: BotContext): BotReply {
   if (has(t, "giam gia", "ma giam", "khuyen mai", "uu dai", "tich diem", "voucher")) {
     return {
       text: [
-        ...Object.entries(COUPONS).map(([code, c]) => `• Mã ${code}: ${c.label}, giảm ${c.percent}%`),
+        ...Object.entries(COUPONS).map(([code, c]) => `• Mã ${code}: giảm ${c.percent}% khi đặt bất kỳ combo nào`),
         `• Tích điểm: đủ ${LOYALTY.every} lần làm xong, lần kế tiếp giảm ${LOYALTY.percent}% (tự trừ khi đặt lịch)`,
         "Mỗi lần chỉ áp dụng một ưu đãi cao nhất.",
       ].join("\n"),
-      links: [BOOK_LINK, SHOP_LINK],
+      links: [BOOK_LINK],
     };
   }
 

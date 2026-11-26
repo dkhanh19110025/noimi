@@ -56,23 +56,21 @@ assert.match(ask("rẻ", { ...ctx, products: null }).text, /chưa tải được
 const bundled = { ...ctx, services: [{ name: "Uốn mi", price: 150000 }, { name: "Uốn mi + Serum dưỡng mi", price: 240000, originalPrice: 270000 }] };
 assert.match(ask("combo nào rẻ", bundled).text, /tiết kiệm rẻ nhất: Uốn mi \+ Serum dưỡng mi — 240\.000đ \(bớt 30\.000đ\)/);
 assert.equal(ask("sau khi nối mi cần kiêng gì").links[0].href, "/cham-soc");
-assert.match(ask("có mã giảm giá không").text, /CHAOBAN/);
+assert.match(ask("có mã giảm giá không").text, /LINHHUE: giảm 10%/);
 
 console.log("chat-bot: OK");
 
 // Giảm giá & tích điểm
-const h = (o = {}) => ({ doneBookings: 0, pendingBookings: 0, orders: 0, doneOrders: 0, ...o });
-assert.equal(pickDiscount("chaoban", h(), "booking").percent, 10);
-assert.equal(pickDiscount("CHAOBAN", h({ pendingBookings: 1 }), "booking").ok, false);
-assert.equal(pickDiscount("QUAYLAI", h(), "order").ok, false);
-assert.equal(pickDiscount("QUAYLAI", h({ doneOrders: 1, orders: 1 }), "order").percent, 5);
-assert.equal(pickDiscount("", h({ doneBookings: 5 }), "booking").percent, 20);
-assert.equal(pickDiscount("QUAYLAI", h({ doneBookings: 10 }), "booking").percent, 20);
-assert.equal(pickDiscount("", h({ doneBookings: 5, pendingBookings: 1 }), "booking").percent, 0);
-assert.equal(pickDiscount("", h({ doneBookings: 4 }), "booking").percent, 0);
-assert.equal(pickDiscount("", h({ doneBookings: 5 }), "order").percent, 0);
-assert.equal(pickDiscount("SAI", h(), "booking").ok, false);
-assert.equal(pickDiscount("constructor", h(), "booking").ok, false);
+const h = (o = {}) => ({ doneBookings: 0, pendingBookings: 0, ...o });
+assert.equal(pickDiscount(" linhhue ", h()).percent, 10);
+assert.equal(pickDiscount("LINHHUE", h({ doneBookings: 3, pendingBookings: 1 })).percent, 10);
+assert.equal(pickDiscount("", h({ doneBookings: 5 })).percent, 20);
+assert.equal(pickDiscount("LINHHUE", h({ doneBookings: 10 })).percent, 20);
+assert.equal(pickDiscount("", h({ doneBookings: 5, pendingBookings: 1 })).percent, 0);
+assert.equal(pickDiscount("", h({ doneBookings: 4 })).percent, 0);
+assert.equal(pickDiscount("CHAOBAN", h()).ok, false);
+assert.equal(pickDiscount("QUAYLAI", h({ doneBookings: 1 })).ok, false);
+assert.equal(pickDiscount("constructor", h()).ok, false);
 assert.equal(applyPercent(250000, 20), 200000);
 assert.equal(applyPercent(315000, 5), 299000);
 

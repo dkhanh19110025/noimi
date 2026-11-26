@@ -76,7 +76,7 @@ export default async function ProfilePage() {
               : `Còn ${LOYALTY.every - (doneBookings % LOYALTY.every)} lần nữa để được giảm ${LOYALTY.percent}%.`}
           </p>
           <p className="muted" style={{ marginTop: 8 }}>
-            {Object.entries(COUPONS).map(([code, c]) => `${code}: ${c.label} -${c.percent}%`).join(" · ")}
+            {Object.entries(COUPONS).map(([code, c]) => `Nhập mã ${code} khi đặt combo: giảm ${c.percent}%`).join(" · ")}
           </p>
           <Link href="/dat-lich" className="btn btn--blue interactive" style={{ marginTop: 12 }}>🔁 Đặt lại lịch</Link>
         </div>

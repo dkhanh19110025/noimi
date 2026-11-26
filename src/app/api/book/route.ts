@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
 
     // Giảm giá luôn tính ở server từ lịch sử trong database
     // shortcut: hai lần đặt gửi cùng lúc có thể cùng được giảm; admin thấy ghi chú ưu đãi trên từng lịch.
-    const discount = pickDiscount(body.coupon, await getHistory(db, phone), "booking");
+    const discount = pickDiscount(body.coupon, await getHistory(db, phone));
     if (!discount.ok) return fail(400, "BAD_COUPON", discount.error);
     const price = applyPercent(combo.price, discount.percent);
     const label = discount.percent ? `${discount.label} (-${discount.percent}%)` : "";

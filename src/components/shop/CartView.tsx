@@ -10,10 +10,9 @@ export default function CartView() {
   const { user, ready, cart, setQty, removeFromCart, clearCart } = useShop();
   const [products, setProducts] = useState<Product[] | null>(null);
   const [note, setNote] = useState("");
-  const [coupon, setCoupon] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [done, setDone] = useState<{ code: string; mailed: boolean; total: number; discount: string } | null>(null);
+  const [done, setDone] = useState<{ code: string; mailed: boolean } | null>(null);
 
   useEffect(() => {
     fetch("/api/shop/products")
@@ -27,8 +26,6 @@ export default function CartView() {
       <div className="card" style={{ marginTop: 24 }}>
         <h2>🎉 Đặt hàng thành công</h2>
         <p style={{ marginTop: 8 }}>Mã đơn: <b>{done.code}</b></p>
-        <p style={{ marginTop: 8 }}>Trả tại tiệm: <b>{formatPrice(done.total)}</b></p>
-        {done.discount && <p style={{ marginTop: 8 }}><span className="hl">{done.discount}</span></p>}
         <p className="muted" style={{ marginTop: 8 }}>
           {done.mailed
             ? "Email xác nhận đang được gửi cho bạn."
@@ -67,12 +64,12 @@ export default function CartView() {
       const res = await fetch("/api/shop/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items: lines.map((l) => ({ product_id: l.id, qty: l.qty })), note, coupon: coupon.trim() }),
+        body: JSON.stringify({ items: lines.map((l) => ({ product_id: l.id, qty: l.qty })), note }),
       });
       const json = await res.json().catch(() => null);
       if (res.ok) {
         clearCart();
-        setDone({ code: json.code, mailed: !!json.mailed, total: json.total, discount: json.discount ?? "" });
+        setDone({ code: json.code, mailed: !!json.mailed });
       } else if (res.status === 401) {
         window.location.href = "/dang-nhap?next=/gio-hang";
         return;
@@ -111,10 +108,6 @@ export default function CartView() {
         <label className="form-label">
           <span>Ghi chú (không bắt buộc)</span>
           <textarea className="form-input form-textarea" rows={2} maxLength={300} value={note} onChange={(e) => setNote(e.target.value)} />
-        </label>
-        <label className="form-label" style={{ marginTop: 12 }}>
-          <span>Mã giảm giá (nếu có)</span>
-          <input className="form-input" maxLength={20} autoCapitalize="characters" autoComplete="off" value={coupon} onChange={(e) => setCoupon(e.target.value)} />
         </label>
         <p className="summary-row" style={{ marginTop: 16, fontSize: "1.3rem" }}>
           <span>Tổng cộng: </span><strong>{formatPrice(total)}</strong>

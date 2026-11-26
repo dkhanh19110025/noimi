@@ -36,13 +36,33 @@ export default function ChatBot() {
   const inputRef = useRef<HTMLInputElement>(null);
   const openerRef = useRef<HTMLButtonElement>(null);
   const logRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!open) return;
-    inputRef.current?.focus();
+    // Trên điện thoại không tự bật bàn phím, để khách thấy lời chào và câu hỏi gợi ý trước
+    (matchMedia("(pointer: fine)").matches ? inputRef : dialogRef).current?.focus();
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && close();
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  // Bàn phím iOS che trang mà không đổi 100dvh: ép khung chat nằm trong phần còn nhìn thấy
+  useEffect(() => {
+    const view = window.visualViewport;
+    const box = dialogRef.current;
+    if (!open || !view || !box) return;
+    const fit = () => {
+      box.style.setProperty("--vv-height", `${view.height}px`);
+      box.style.setProperty("--vv-bottom", `${Math.max(0, window.innerHeight - view.height - view.offsetTop)}px`);
+    };
+    fit();
+    view.addEventListener("resize", fit);
+    view.addEventListener("scroll", fit);
+    return () => {
+      view.removeEventListener("resize", fit);
+      view.removeEventListener("scroll", fit);
+    };
   }, [open]);
 
   // Cuộn tới đầu câu trả lời mới nhất
@@ -82,7 +102,7 @@ export default function ChatBot() {
   }
 
   return (
-    <div className="chat" role="dialog" aria-labelledby="chat-title">
+    <div ref={dialogRef} className="chat" role="dialog" aria-labelledby="chat-title" tabIndex={-1}>
       <div className="chat__head">
         <h2 id="chat-title">🤖 Trợ lý của tiệm</h2>
         <button type="button" className="chat__close interactive" onClick={close} aria-label="Đóng khung chat">
