@@ -22,7 +22,7 @@ export const combos: Combo[] = [
     description: "Đánh thức nét dịu dàng với hàng mi cong tự nhiên.",
     price: 150000,
     durationMinutes: 30,
-    imageUrl: "/combos/uonmi.webp",
+    imageUrl: "/combos/remix.webp",
     color: "blue",
   },
   {
@@ -32,7 +32,7 @@ export const combos: Combo[] = [
     description: "Nâng tầm ánh nhìn, tăng thêm sức hút cho đôi mắt.",
     price: 250000,
     durationMinutes: 30,
-    imageUrl: "/combos/noimi.webp",
+    imageUrl: "/combos/nhoi.webp",
     color: "pink",
   },
   {
@@ -54,7 +54,7 @@ export const combos: Combo[] = [
     price: 240000,
     originalPrice: 270000,
     durationMinutes: 30,
-    imageUrl: "/combos/uonmi.webp",
+    imageUrl: "/combos/lofi.webp",
     color: "blue",
   },
   {
@@ -65,7 +65,7 @@ export const combos: Combo[] = [
     price: 330000,
     originalPrice: 370000,
     durationMinutes: 30,
-    imageUrl: "/combos/noimi.webp",
+    imageUrl: "/combos/uonmi.webp",
     color: "pink",
   },
   {
@@ -76,7 +76,7 @@ export const combos: Combo[] = [
     price: 315000,
     originalPrice: 350000,
     durationMinutes: 30,
-    imageUrl: "/combos/da.webp",
+    imageUrl: "/combos/noimi.webp",
     color: "green",
   },
 ];
