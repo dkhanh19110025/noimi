@@ -91,7 +91,7 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
                 <ConfirmButton
                   className="btn btn--pink interactive"
                   title={`⚠️ Xóa ${p.name}?`}
-                  message="Sản phẩm bị xóa hẳn, không khôi phục được. Đơn cũ vẫn giữ tên và giá. Nếu chỉ muốn tạm giấu thì bấm Ẩn."
+                  message="Sản phẩm và ảnh đã tải lên bị xóa hẳn, không khôi phục được. Đơn cũ vẫn giữ tên và giá. Nếu chỉ muốn tạm giấu thì bấm Ẩn."
                 >
                   🗑️ Xóa
                 </ConfirmButton>

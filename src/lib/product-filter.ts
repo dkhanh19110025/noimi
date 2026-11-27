@@ -1,4 +1,4 @@
-export const CATEGORIES = ["Cho mi", "Cho da", "Phụ kiện"] as const;
+export const CATEGORIES = ["Mạch", "Cảm biến", "Phụ kiện"] as const;
 
 export const PRICE_RANGES = [
   { id: "low", label: "Dưới 100k", match: (p: number) => p < 100_000 },
@@ -6,10 +6,9 @@ export const PRICE_RANGES = [
   { id: "high", label: "Trên 150k", match: (p: number) => p > 150_000 },
 ];
 
-// shortcut: suy loại từ tên/mô tả; khi sản phẩm nhiều và đoán sai thì thêm cột "category" trong admin.
-export function categoryOf(p: { name: string; description: string }): (typeof CATEGORIES)[number] {
+// shortcut: suy loại từ tên; khi sản phẩm nhiều và đoán sai thì thêm cột "category" trong admin.
+export function categoryOf(p: { name: string }): (typeof CATEGORIES)[number] {
   const name = p.name.toLowerCase().normalize("NFC");
-  if (/gương|chổi|lược|kẹp|túi|hộp đựng/.test(name)) return "Phụ kiện";
-  const all = `${name} ${p.description.toLowerCase().normalize("NFC")}`;
-  return /(^|[^\p{L}])mi([^\p{L}]|$)/u.test(all) ? "Cho mi" : "Cho da";
+  if (name.startsWith("cảm biến")) return "Cảm biến";
+  return /^(mạch|màn hình)/.test(name) ? "Mạch" : "Phụ kiện";
 }

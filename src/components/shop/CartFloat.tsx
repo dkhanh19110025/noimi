@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { isShopPath } from "@/data/shop";
 import { useShop } from "./ShopProvider";
 
-/** Nút giỏ hàng nổi, nằm ngay trên nút Zalo để khách bấm được ở mọi trang. */
+/** Nút giỏ hàng nổi, nằm ngay trên nút Zalo chỉ hiện trong khu Shopping. */
 export default function CartFloat() {
   const pathname = usePathname();
   const { cartCount } = useShop();
-  if (pathname.startsWith("/admin") || pathname === "/gio-hang") return null;
+  if (!isShopPath(pathname) || pathname === "/gio-hang") return null;
 
   return (
     <Link

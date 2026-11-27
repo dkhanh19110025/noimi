@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { navItems, shop } from "@/data/shop";
+import { isShopPath, navItems, shop } from "@/data/shop";
 import { useShop } from "@/components/shop/ShopProvider";
 
 export default function SiteHeader() {
@@ -46,7 +46,7 @@ export default function SiteHeader() {
               </Link>
             );
           })}
-          {[
+          {isShopPath(pathname) && [
             { href: "/yeu-thich", icon: "❤️", label: "Yêu thích", count: favs.length },
             user || displayName
               ? { href: "/ho-so", icon: "👤", label: (user?.name ?? displayName ?? "").split(" ").pop() || "Hồ sơ", count: 0 }

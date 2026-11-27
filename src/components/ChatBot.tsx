@@ -3,32 +3,21 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useShop } from "@/components/shop/ShopProvider";
 import { SESSIONS } from "@/data/booking";
-import { combos, formatPrice } from "@/data/combos";
-import { shop } from "@/data/shop";
-import { QUICK_QUESTIONS, reply, type BotProduct, type BotReply } from "@/lib/chat-bot";
+import { combos } from "@/data/combos";
+import { isShopPath, shop } from "@/data/shop";
+import { QUICK_QUESTIONS, reply, type BotReply } from "@/lib/chat-bot";
 
 type Message = BotReply & { from: "bot" | "user" };
 
 const GREETING: Message = {
   from: "bot",
-  text: "Chào bạn 👋 Bạn muốn tìm combo rẻ, hỏi cách đặt lịch hay mua hàng?",
+  text: "Chào bạn 👋 Bạn muốn tìm combo rẻ, hỏi cách đặt lịch hay địa chỉ tiệm?",
 };
-
-async function loadProducts(): Promise<BotProduct[] | null> {
-  try {
-    const res = await fetch("/api/shop/products");
-    return res.ok ? (await res.json()).products : null;
-  } catch {
-    return null;
-  }
-}
 
 /** Khung chat tư vấn theo từ khóa, hiện ở mọi trang khách. */
 export default function ChatBot() {
   const pathname = usePathname();
-  const { cart, addToCart } = useShop();
   const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
   const [messages, setMessages] = useState<Message[]>([GREETING]);
@@ -85,8 +74,8 @@ export default function ChatBot() {
     setBusy(true);
     setMessages((m) => [...m, { from: "user", text: q }]);
     // Giữ ba chấm tối thiểu 0,9 giây cho giống người đang gõ
-    const [products] = await Promise.all([loadProducts(), new Promise((done) => setTimeout(done, 900))]);
-    const answer = reply(q, { products, services: combos, shop, sessions: SESSIONS });
+    await new Promise((done) => setTimeout(done, 900));
+    const answer = reply(q, { services: combos, shop, sessions: SESSIONS });
     setMessages((m) => [...m, { from: "bot", ...answer }]);
     setBusy(false);
   }
@@ -95,7 +84,7 @@ export default function ChatBot() {
 
   if (!open) {
     return (
-      <button ref={openerRef} type="button" className="chat-float interactive" onClick={() => setOpen(true)}>
+      <button ref={openerRef} type="button" className={`chat-float interactive${isShopPath(pathname) ? "" : " chat-float--low"}`} onClick={() => setOpen(true)}>
         <span aria-hidden="true">🤖</span> Tư vấn
       </button>
     );
@@ -114,30 +103,6 @@ export default function ChatBot() {
         {messages.map((m, i) => (
           <div key={i} className={`chat__msg chat__msg--${m.from}`}>
             <p>{m.text}</p>
-            {m.products?.map((p) => {
-              const full = (cart[p.id] ?? 0) >= p.stock;
-              return (
-                <div key={p.id} className="chat__product">
-                  <span>
-                    <span aria-hidden="true">{p.icon}</span> <strong>{p.name}</strong>
-                    <span className="muted"> — {formatPrice(p.price)}</span>
-                  </span>
-                  {p.stock > 0 ? (
-                    <button
-                      type="button"
-                      className="chat__chip interactive"
-                      disabled={full}
-                      onClick={() => addToCart(p.id, p.stock)}
-                      aria-label={`Thêm ${p.name} vào giỏ`}
-                    >
-                      {cart[p.id] ? `Trong giỏ: ${cart[p.id]}` : "+ Giỏ"}
-                    </button>
-                  ) : (
-                    <span className="muted">Hết hàng</span>
-                  )}
-                </div>
-              );
-            })}
             {m.links && (
               <div className="chat__links">
                 {m.links.map((l) =>

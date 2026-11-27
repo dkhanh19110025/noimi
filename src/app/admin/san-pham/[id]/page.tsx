@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import ImageFileInput from "@/components/admin/ImageFileInput";
 import { requireAdmin } from "@/lib/admin-auth";
 import { getSupabase } from "@/lib/supabase-server";
 import { saveProduct } from "../../shop-actions";
@@ -14,6 +15,8 @@ const COLORS = [
 const MESSAGES: Record<string, string> = {
   invalid: "⚠️ Vui lòng nhập tên, giá và số lượng hợp lệ (không âm).",
   badimg: "⚠️ Link ảnh phải bắt đầu bằng http:// hoặc https://.",
+  badfile: "⚠️ Ảnh phải là file JPG, PNG hoặc WEBP, tối đa 4 MB.",
+  upload: "⚠️ Không tải được ảnh lên, vui lòng thử lại.",
   error: "⚠️ Có lỗi, vui lòng thử lại.",
 };
 
@@ -70,8 +73,18 @@ export default async function AdminProductEditPage({
             <input className="form-input" name="icon" maxLength={8} defaultValue={p.icon} />
           </label>
         </div>
+        {p.image_url && (
+          <div className="admin-prod__icon">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={p.image_url} alt="Ảnh hiện tại của sản phẩm" />
+          </div>
+        )}
         <label className="form-label">
-          <span>Link ảnh (không bắt buộc, có ảnh thì thay emoji)</span>
+          <span>Tải ảnh từ máy (JPG, PNG, WEBP, tối đa 4 MB)</span>
+          <ImageFileInput />
+        </label>
+        <label className="form-label">
+          <span>Hoặc dán link ảnh (không bắt buộc; để trống và không chọn file thì dùng emoji)</span>
           <input className="form-input" name="image_url" type="url" maxLength={500} placeholder="https://…" defaultValue={p.image_url ?? ""} />
         </label>
         <fieldset style={{ border: 0, padding: 0 }}>

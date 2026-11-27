@@ -6,6 +6,8 @@ const nextConfig = {
   allowedDevOrigins: ["192.168.*.*", "10.*.*.*"],
   // Tắt logo / indicator của Next.js khi chạy chế độ dev
   devIndicators: false,
+  // Cho phép form admin gửi ảnh sản phẩm tối đa 4 MB (mặc định chỉ 1 MB)
+  experimental: { serverActions: { bodySizeLimit: "4.5mb" } },
   async headers() {
     return [
       { source: "/admin/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] },

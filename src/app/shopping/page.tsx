@@ -20,8 +20,8 @@ export default async function ShoppingPage() {
   return (
     <main className="container section">
       <span className="badge-tilt">Shopping</span>
-      <h1 style={{ marginTop: 24 }}>Đồ chăm mi & da</h1>
-      <p className="subtitle">— giữ vẻ đẹp lâu hơn</p>
+      <h1 style={{ marginTop: 24 }}>Linh kiện điện tử</h1>
+      <p className="subtitle">— ráp là chạy liền</p>
       <p className="muted" style={{ marginTop: 12 }}>
         Thêm vào giỏ, đặt hàng, nhận và thanh toán tại <span className="hl">{shop.name}</span>.
       </p>

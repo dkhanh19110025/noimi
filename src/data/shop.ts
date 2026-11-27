@@ -10,8 +10,14 @@ export const shop = {
   phone: "0865536573",
 };
 
+/** Các trang thuộc khu Shopping: chỉ ở đây mới hiện giỏ hàng, yêu thích và tài khoản mua hàng. */
+export function isShopPath(pathname: string): boolean {
+  return ["/shopping", "/gio-hang", "/yeu-thich", "/ho-so", "/dang-nhap", "/dang-ky"].some(
+    (p) => pathname === p || pathname.startsWith(p + "/")
+  );
+}
+
 export const navItems = [
   { href: "/dat-lich", label: "Đặt lịch", icon: "📅" },
   { href: "/shopping", label: "Shopping", icon: "🛍️" },
-  { href: "/cham-soc", label: "Chăm sóc", icon: "🌿" },
 ];
